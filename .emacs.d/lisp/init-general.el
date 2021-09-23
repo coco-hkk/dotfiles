@@ -1,0 +1,66 @@
+;;; init-general.el --- setting for user interface, encoding, font-*- lexical-binding: t -*-
+;;; Commentary:
+;;; Code:
+
+;;; User Interface configurations
+(setq inhibit-startup-message t)    ; 关闭启动页
+
+(scroll-bar-mode -1)            ; 禁掉滚动条
+(tool-bar-mode -1)              ; 禁掉工具栏
+(tooltip-mode -1)               ; 禁掉提示窗
+(menu-bar-mode -1)              ; 禁掉菜单栏
+(set-fringe-mode 5)             ; 设置侧边空白大小
+
+(blink-cursor-mode -1)          ; 去掉光标闪烁
+
+(setq visible-bell t)           ; 禁掉蜂鸣
+(setq make-backup-files nil)    ; 禁止备份文件
+
+;; 设置窗体透明度及全屏
+(set-frame-parameter (selected-frame) 'alpha '(90 . 90))
+(add-to-list 'default-frame-alist '(alpha . (90 . 90)))
+(set-frame-parameter (selected-frame) 'fullscreen 'maximized)
+(add-to-list 'default-frame-alist '(fullscreen . maximized))
+
+;; 开启行号
+(column-number-mode)
+
+;; Enable line numbers for some modes
+;; global setting: (global-display-line-numbers-mode t)
+(dolist (mode '(text-mode-hook
+                prog-mode-hook
+                conf-mode-hook))
+  (add-hook mode (lambda () (display-line-numbers-mode 1))))
+
+;; 禁掉一些模式的行号
+(dolist (mode '(org-mode-hook
+		eshell-mode-hook))
+  (add-hook mode (lambda () (display-line-numbers-mode 0))))
+
+(setq large-file-warning-threshold nil)    ; Don’t warn for large files (shows up when launching videos)
+(setq vc-follow-symlinks t)                ; Don’t warn for symlinked files
+(setq ad-redefinition-action 'accept)      ; Don’t warn when advice is added for functions
+
+;;; 编码设置
+(set-language-environment 'utf-8)
+(set-locale-environment "utf-8")
+(set-default-coding-systems 'utf-8)
+
+;;; 中英文等宽字体
+(defun set-font (english chinese english-size chinese-size)
+   (set-face-attribute 'default nil :font
+		       (format   "%s:pixelsize=%d"  english english-size))
+   (dolist (charset '(kana han symbol cjk-misc bopomofo))
+     (set-fontset-font (frame-parameter nil 'font) charset
+		       (font-spec :family chinese :size chinese-size))))
+
+(set-font   "Dejavu Sans Mono" "WenQuanYi Zen Hei Mono" 16 20)
+
+;; Set the fixed pitch face
+(set-face-attribute 'fixed-pitch nil :font "Fira Code Retina" :height 120)
+
+;; Set the variable pitch face
+(set-face-attribute 'variable-pitch nil :font "Dejavu Sans Mono" :height 120 :weight 'regular)
+
+(provide 'init-general)
+;;; init-general.el ends here
