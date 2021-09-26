@@ -3,10 +3,11 @@
 ;;; Code:
 
 (use-package command-log-mode
+  :defer 3
   :commands command-log-mode)
 
 (use-package helpful
-  :ensure t
+  :defer 3
   :custom
   (counsel-describe-function-function #'helpful-callable)
   (counsel-describe-variable-function #'helpful-variable)

@@ -5,16 +5,28 @@
 ;;; User Interface configurations
 (setq inhibit-startup-message t)    ; 关闭启动页
 
-(scroll-bar-mode -1)            ; 禁掉滚动条
-(tool-bar-mode -1)              ; 禁掉工具栏
-(tooltip-mode -1)               ; 禁掉提示窗
-(menu-bar-mode -1)              ; 禁掉菜单栏
-(set-fringe-mode 5)             ; 设置侧边空白大小
+(scroll-bar-mode -1)                ; 禁掉滚动条
+(tool-bar-mode -1)                  ; 禁掉工具栏
+(tooltip-mode -1)                   ; 禁掉提示窗
+(menu-bar-mode -1)                  ; 禁掉菜单栏
+(set-fringe-mode 5)                 ; 设置侧边空白大小
 
-(blink-cursor-mode -1)          ; 去掉光标闪烁
+(blink-cursor-mode -1)              ; 去掉光标闪烁
 
-(setq visible-bell t)           ; 禁掉蜂鸣
-(setq make-backup-files nil)    ; 禁止备份文件
+(setq visible-bell t)               ; 禁掉蜂鸣
+(setq make-backup-files nil)        ; 禁止备份文件
+
+(fset 'yes-or-no-p 'y-or-n-p)       ; 使用 'y/n' 代替 'yes/no'
+
+(setq-default fill-column 80)       ; 设置填充列
+
+(electric-pair-mode t)              ; 自动补全括号
+
+;; tab width setting
+(setq-default tab-width 2)
+(setq-default evil-shift-width tab-width)
+
+(setq-default indent-tabs-mode nil) ; 空格替代 tab
 
 ;; 设置窗体透明度及全屏
 (set-frame-parameter (selected-frame) 'alpha '(90 . 90))
@@ -57,10 +69,10 @@
 (set-font   "Dejavu Sans Mono" "WenQuanYi Zen Hei Mono" 16 20)
 
 ;; Set the fixed pitch face
-(set-face-attribute 'fixed-pitch nil :font "Fira Code Retina" :height 120)
+(set-face-attribute 'fixed-pitch nil :font "ubuntu mono" :height 160)
 
 ;; Set the variable pitch face
-(set-face-attribute 'variable-pitch nil :font "Dejavu Sans Mono" :height 120 :weight 'regular)
+(set-face-attribute 'variable-pitch nil :font "Dejavu Sans Mono" :height 160 :weight 'regular)
 
-(provide 'init-general)
+(provide 'init-base)
 ;;; init-general.el ends here

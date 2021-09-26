@@ -20,6 +20,7 @@
   (ace-window-display-mode 1))
 
 (use-package winner
+  :straight nil
   :after evil
   :config
   (winner-mode)

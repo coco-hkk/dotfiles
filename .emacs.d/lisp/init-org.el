@@ -2,8 +2,8 @@
 ;;; Commentary:
 ;;; Code:
 
-;; TODO: Mode this to another section
-(setq-default fill-column 80)
+(defun dw/org-path (path)
+  (expand-file-name path "f:/Notes/org/"))
 
 ;; Turn on indentation and auto-fill mode for Org files
 (defun es/org-mode-setup ()
@@ -14,14 +14,15 @@
   (setq evil-auto-indent nil)
   (diminish org-indent-mode))
 
-;; font
+;; font settings
 (defun es/org-font-setup ()
   "Org font setup"
   (set-face-attribute 'org-document-title nil :font "Cantarell" :weight 'bold :height 1.3)
-  (dolist (face '((org-level-1 . 1.2)
-                  (org-level-2 . 1.1)
-                  (org-level-3 . 1.05)
-                  (org-level-4 . 1.0)
+
+  (dolist (face '((org-level-1 . 1.728)
+                  (org-level-2 . 1.44)
+                  (org-level-3 . 1.2)
+                  (org-level-4 . 1.1)
                   (org-level-5 . 1.1)
                   (org-level-6 . 1.1)
                   (org-level-7 . 1.1)
@@ -46,7 +47,6 @@
   (set-face-attribute 'org-column-title nil :background nil))
 
 (use-package org
-  :defer t
   :hook (org-mode . es/org-mode-setup)
   :config
   (setq org-ellipsis " ▾"
@@ -60,17 +60,15 @@
         org-startup-folded 'content
         org-cycle-separator-lines 2)
 
-  (setq org-modules
-        '(org-crypt
-          org-habit
-          org-bookmark
-          org-eshell
-          org-irc))
-
+  ;; org refile
   (setq org-refile-targets
         '((nil :maxlevel . 1)
           ("org-agenda-files" :maxlevel . 1)))
 
+  ;; Save Org buffers after refiling!
+  (advice-add 'org-refile :after 'org-save-all-org-buffers)
+
+  ;; org babel
   (org-babel-do-load-languages
    'org-babel-load-languages
    '((emacs-lisp . t)
@@ -78,12 +76,12 @@
 
   (push '("conf-unix" . conf-unix) org-src-lang-modes)
 
+  (es/org-font-setup)
+
   (use-package org-superstar
-    :after org
     :hook (org-mode . org-superstar-mode)
     :custom
-    (org-superstar-remove-leading-stars t)
-    (org-superstar-headline-bullets-list '("◉" "○" "●" "○" "●" "○" "●")))
+    (org-superstar-remove-leading-stars t))
 
   (require 'org-tempo)
   (add-to-list 'org-structure-template-alist '("sh" . "src sh"))
@@ -97,7 +95,6 @@
   (add-to-list 'org-structure-template-alist '("json" . "src json"))
 
   (use-package evil-org
-    :after org
     :hook ((org-mode . evil-org-mode)
            (org-agenda-mode . evil-org-mode)
            (evil-org-mode . (lambda () (evil-org-set-key-theme '(navigation todo insert textobjects additional)))))
@@ -105,137 +102,130 @@
     (require 'evil-org-agenda)
     (evil-org-agenda-set-keys))
 
-  (es/leader-key-def
-    "o"   '(:ignore t :which-key "org mode")
-
-    "oi"  '(:ignore t :which-key "insert")
-    "oil" '(org-insert-link :which-key "insert link")
-
-    "on"  '(org-toggle-narrow-to-subtree :which-key "toggle narrow")
-
-    "os"  '(dw/counsel-rg-org-files :which-key "search notes")
-
-    "oa"  '(org-agenda :which-key "status")
-    "ot"  '(org-todo-list :which-key "todos")
-    "oc"  '(org-capture t :which-key "capture")
-    "ox"  '(org-export-dispatch t :which-key "export"))
-
+  ;; Workflow States
   (setq org-todo-keywords
         '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!)")
-          (sequence "BACKLOG(b)" "PLAN(p)" "READY(r)" "ACTIVE(a)" "REVIEW(v)" "WAIT(w@/!)" "HOLD(h)" "|" "COMPLETED(c)" "CANC(k@)")))
+          (sequence "|" "WAIT(w)" "BACK(b)")))
 
-
-  ;; Save Org buffers after refiling!
-  (advice-add 'org-refile :after 'org-save-all-org-buffers)
+  (setq org-todo-keyword-faces
+        '(("NEXT" . (:foreground "orange red" :weight bold))
+          ("WAIT" . (:foreground "HotPink2" :weight bold))
+          ("BACK" . (:foreground "MediumPurple3" :weight bold))))
 
   (setq org-tag-alist
         '((:startgroup)
                                         ; Put mutually exclusive tags here
           (:endgroup)
-          ("@errand" . ?E)
           ("@home" . ?H)
           ("@work" . ?W)
-          ("agenda" . ?a)
-          ("planning" . ?p)
-          ("publish" . ?P)
           ("batch" . ?b)
-          ("note" . ?n)
-          ("idea" . ?i)))
+          ("followup" . ?f)))
 
   ;; Configure custom agenda views
+  (setq org-agenda-window-setup 'current-window)
+  (setq org-agenda-span 'day)
+  (setq org-agenda-start-with-log-mode t)
+
+  ;; Make done tasks show up in the agenda log
+  (setq org-log-done 'time)
+  (setq org-log-into-drawer t)
+
+  (setq org-columns-default-format "%20CATEGORY(Category) %65ITEM(Task) %TODO %6Effort(Estim){:}  %6CLOCKSUM(Clock) %TAGS")
+
   (setq org-agenda-custom-commands
-        '(("d" "Dashboard"
+        `(("d" "Dashboard"
            ((agenda "" ((org-deadline-warning-days 7)))
+            (tags-todo "+PRIORITY=\"A\""
+                       ((org-agenda-overriding-header "High Priority")))
+            (tags-todo "+followup" ((org-agenda-overriding-header "Needs Follow Up")))
             (todo "NEXT"
-                  ((org-agenda-overriding-header "Next Tasks")))
-            (tags-todo "agenda/ACTIVE" ((org-agenda-overriding-header "Active Projects")))))
+                  ((org-agenda-overriding-header "Next Actions")
+                   (org-agenda-max-todos nil)))
+            (todo "TODO"
+                  ((org-agenda-overriding-header "Unprocessed Inbox Tasks")
+                   (org-agenda-files '(,(dw/org-path "Inbox.org")))
+                   (org-agenda-text-search-extra-files nil)))))
 
           ("n" "Next Tasks"
-           ((todo "NEXT"
+           ((agenda "" ((org-deadline-warning-days 7)))
+            (todo "NEXT"
                   ((org-agenda-overriding-header "Next Tasks")))))
-
-          ("W" "Work Tasks" tags-todo "+work-email")
 
           ;; Low-effort next actions
           ("e" tags-todo "+TODO=\"NEXT\"+Effort<15&+Effort>0"
            ((org-agenda-overriding-header "Low Effort Tasks")
             (org-agenda-max-todos 20)
-            (org-agenda-files org-agenda-files)))
+            (org-agenda-files org-agenda-files)))))
 
-          ("w" "Workflow Status"
-           ((todo "WAIT"
-                  ((org-agenda-overriding-header "Waiting on External")
-                   (org-agenda-files org-agenda-files)))
-            (todo "REVIEW"
-                  ((org-agenda-overriding-header "In Review")
-                   (org-agenda-files org-agenda-files)))
-            (todo "PLAN"
-                  ((org-agenda-overriding-header "In Planning")
-                   (org-agenda-todo-list-sublevels nil)
-                   (org-agenda-files org-agenda-files)))
-            (todo "BACKLOG"
-                  ((org-agenda-overriding-header "Project Backlog")
-                   (org-agenda-todo-list-sublevels nil)
-                   (org-agenda-files org-agenda-files)))
-            (todo "READY"
-                  ((org-agenda-overriding-header "Ready for Work")
-                   (org-agenda-files org-agenda-files)))
-            (todo "ACTIVE"
-                  ((org-agenda-overriding-header "Active Projects")
-                   (org-agenda-files org-agenda-files)))
-            (todo "COMPLETED"
-                  ((org-agenda-overriding-header "Completed Projects")
-                   (org-agenda-files org-agenda-files)))
-            (todo "CANC"
-                  ((org-agenda-overriding-header "Cancelled Projects")
-                   (org-agenda-files org-agenda-files)))))))
+  (add-hook 'org-timer-set-hook #'org-clock-in)
 
-  (setq org-capture-templates
-        `(("t" "Tasks / Projects")
-          ("tt" "Task" entry (file+olp "f:/Github/orgFiles/Tasks.org" "Inbox")
-           "* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)
+(defun dw/get-todays-journal-file-name ()
+  "Gets the journal file name for today's date"
+  (interactive)
+  (let* ((journal-file-name
+           (expand-file-name
+             (format-time-string "%Y/%Y-%2m-%B.org")
+             (dw/org-path "Journal/")))
+         (journal-year-dir (file-name-directory journal-file-name)))
+    (if (not (file-directory-p journal-year-dir))
+      (make-directory journal-year-dir))
+    journal-file-name))
 
-          ("j" "Journal Entries")
-          ("jj" "Journal" entry
-           (file+olp+datetree "f:/Github/orgFiles/Journal.org")
-           "\n* %<%I:%M %p> - Journal :journal:\n\n%?\n\n"
-           ;; ,(dw/read-file-as-string "~/Notes/Templates/Daily.org")
-           :clock-in :clock-resume
-           :empty-lines 1)
-          ("jm" "Meeting" entry
-           (file+olp+datetree "f:/Github/orgFiles/Journal.org")
-           "* %<%I:%M %p> - %a :meetings:\n\n%?\n\n"
-           :clock-in :clock-resume
-           :empty-lines 1)
+(defun dw/on-org-capture ()
+  ;; Don't show the confirmation header text
+  (setq header-line-format nil)
 
-          ("w" "Workflows")
-          ("we" "Checking Email" entry (file+olp+datetree "f:/Github/orgFiles/Journal.org")
-           "* Checking Email :email:\n\n%?" :clock-in :clock-resume :empty-lines 1)
+  ;; Control how some buffers are handled
+  (let ((template (org-capture-get :key t)))
+    (pcase template
+      ("jj" (delete-other-windows)))))
 
-          ("m" "Metrics Capture")
-          ("mw" "Weight" table-line (file+headline "f:/Github/orgFiles/Metrics.org" "Weight")
-           "| %U | %^{Weight} | %^{Notes} |" :kill-buffer t)))
+(add-hook 'org-capture-mode-hook 'dw/on-org-capture)
+
+(setq org-capture-templates
+  `(("t" "Tasks")
+    ("tt" "Task" entry (file ,(dw/org-path "Inbox.org"))
+         "* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)
+    ("ts" "Clocked Entry Subtask" entry (clock)
+         "* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)
+
+    ("j" "Journal Entries")
+    ("je" "General Entry" entry
+         (file+olp+datetree ,(dw/org-path "Journal.org"))
+         "\n* %<%I:%M %p> - %^{Title} \n\n%?\n\n"
+         :tree-type week
+         :clock-in :clock-resume
+         :empty-lines 1)
+    ("jt" "Task Entry" entry
+         (file+olp+datetree ,(dw/org-path "Journal.org"))
+         "\n* %<%I:%M %p> - Task Notes: %a\n\n%?\n\n"
+         :tree-type week
+         :clock-in :clock-resume
+         :empty-lines 1)
+    ("jj" "Journal" entry
+         (file+olp+datetree ,(dw/org-path "Journal.org"))
+         "\n* %<%I:%M %p> - Journal :journal:\n\n%?\n\n"
+         :tree-type week
+         :clock-in :clock-resume
+         :empty-lines 1)))
 
   (define-key global-map (kbd "C-c j")
-    (lambda () (interactive) (org-capture nil "jj")))
-
-  (es/org-font-setup))
+    (lambda () (interactive) (org-capture nil "jj"))))
 
 ;; edit org like document
-(defun es/org-mode-visual-fill ()
-  (setq visual-fill-column-width 150
-        visual-fill-column-center-text t)
-  (visual-fill-column-mode 1))
-
 (use-package visual-fill-column
-  :hook (org-mode . es/org-mode-visual-fill))
+  :hook (org-mode . (lambda ()
+                      (setq visual-fill-column-width 100)
+                      (setq visual-fill-column-center-text t)
+                      (visual-fill-column-mode 1))))
 
-(defun dw/org-present-prepare-slide ()
+;; org present settings
+(defun es/org-present-prepare-slide ()
   (org-overview)
   (org-show-entry)
   (org-show-children))
 
-(defun dw/org-present-hook ()
+(defun es/org-present-hook ()
   (setq-local face-remapping-alist '((default (:height 1.5) variable-pitch)
                                      (header-line (:height 4.5) variable-pitch)
                                      (org-document-title (:height 1.75) org-document-title)
@@ -243,38 +233,95 @@
                                      (org-verbatim (:height 1.55) org-verbatim)
                                      (org-block (:height 1.25) org-block)
                                      (org-block-begin-line (:height 0.7) org-block)))
-  (setq header-line-format " ")
-  (org-appear-mode -1)
+  (org-present-hide-cursor)
   (org-display-inline-images)
-  (dw/org-present-prepare-slide)
-  (dw/kill-panel))
+  (org-present-read-only))
 
-(defun dw/org-present-quit-hook ()
+(defun es/org-present-quit-hook ()
   (setq-local face-remapping-alist '((default variable-pitch default)))
-  (setq header-line-format nil)
-  (org-present-small)
   (org-remove-inline-images)
-  (org-appear-mode 1)
-  (dw/start-panel))
+  (org-present-show-cursor)
+  (org-present-read-write))
 
-(defun dw/org-present-prev ()
+(defun es/org-present-prev ()
   (interactive)
   (org-present-prev)
-  (dw/org-present-prepare-slide))
+  (es/org-present-prepare-slide))
 
-(defun dw/org-present-next ()
+(defun es/org-present-next ()
   (interactive)
   (org-present-next)
-  (dw/org-present-prepare-slide)
-  (when (fboundp 'live-crafter-add-timestamp)
-    (live-crafter-add-timestamp (substring-no-properties (org-get-heading t t t t)))))
+  (es/org-present-prepare-slide))
 
 (use-package org-present
+  :after org
   :bind (:map org-present-mode-keymap
-         ("C-c C-j" . dw/org-present-next)
-         ("C-c C-k" . dw/org-present-prev))
-  :hook ((org-present-mode . dw/org-present-hook)
-         (org-present-mode-quit . dw/org-present-quit-hook)))
+              ("C-c C-j" . es/org-present-next)
+              ("C-c C-k" . es/org-present-prev))
+  :hook ((org-present-mode . es/org-present-hook)
+         (org-present-mode-quit . es/org-present-quit-hook)))
+
+;;; org roam settings
+(use-package org-roam
+  :init
+  (setq org-roam-v2-ack t)
+  :custom
+  (org-roam-directory "F:/Notes/org-notes")
+  (org-dilies-directory "f:/Notes/org-notes/daily")
+  (org-roam-graph-executable "D:/Graphviz/bin/dot.exe")
+  (org-roam-completion-everywhere t)
+  :config
+  (org-roam-db-autosync-mode)
+
+  ;; If using org-roam-protocol
+  (require 'org-roam-protocol))
+
+(use-package org-roam-ui
+  :straight
+  (:host github :repo "org-roam/org-roam-ui" :branch "main" :files ("*.el" "out"))
+
+  :after org-roam
+  :config
+  (setq org-roam-ui-sync-theme t
+        org-roam-ui-follow t
+        org-roam-ui-update-on-save t
+        org-roam-ui-open-on-start t))
+
+
+;; org key binding
+(es/leader-key-def
+  ;; org mode
+  "o"   '(:ignore t :which-key "org mode")
+
+  "oi"  '(:ignore t :which-key "insert")
+  "oil" '(org-insert-link :which-key "insert link")
+
+  "on"  '(org-toggle-narrow-to-subtree :which-key "toggle narrow")
+
+  "os"  '(dw/counsel-rg-org-files :which-key "search notes")
+
+  "oa"  '(org-agenda :which-key "agenda status")
+  "oc"  '(org-capture t :which-key "capture")
+  "ot"  '(org-todo-list :which-key "todos")
+  "ox"  '(org-export-dispatch t :which-key "export")
+
+  "op"  '(org-present :which-key "present")
+  "oq"  '(org-present-quit :which-key "present quit"))
+
+(es/ctrl-c-keys
+  ;; org roam
+  "r"   '(:ignore t :which-key "org roam")
+  "rl"  '(org-roam-buffer-toggle :which-key "toggle")
+  "ri"  '(org-roam-node-insert :which-key "node insert")
+  "rf"  '(org-roam-node-find :which-key "node find")
+  "rc"  '(org-roam-capture :which-key "capture")
+  "rj"  '(org-roam-dailies-capture-today :which-key "capture today")
+  "rt"  '(org-roam-dailies-goto-today :which-key "daily today")
+  "ry"  '(org-roam-dailies-goto-yesterday :which-key "daily yesterday")
+  "rr"  '(org-roam-dailies-goto-tomorrow :which-key "daily tomorrow")
+  "rg"  '(org-roam-graph :which-key "graph")
+
+  "ru"  '(org-roam-ui-mode :which-key "ui"))
 
 (provide 'init-org)
 ;;; init-org.el ends here

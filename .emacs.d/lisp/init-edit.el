@@ -2,20 +2,13 @@
 ;;; Commentary:
 ;;; Code:
 
-;; tab width setting
-(setq-default tab-width 2)
-(setq-default evil-shift-width tab-width)
-
-;; 空格代替 tab
-(setq-default indent-tabs-mode nil)
-
 ;; 注释
 (use-package evil-nerd-commenter
   :bind ("M-/" . evilnc-comment-or-uncomment-lines))
 
 ;; auto save
 (use-package super-save
-  :defer 1
+  :defer 4
   :diminish super-save-mode
   :config
   (super-save-mode +1)
@@ -23,6 +16,7 @@
 
 ;; delete whitespace
 (use-package ws-butler
+  :defer 4
   :hook ((text-mode . ws-butler-mode)
          (prog-mode . ws-butler-mode)))
 

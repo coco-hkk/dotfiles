@@ -15,14 +15,13 @@
 
 (setq custom-file (locate-user-emacs-file "custom.el"))
 
-(require 'init-startup)
 (require 'init-package)
-(require 'init-general)
+(require 'init-base)
 (require 'init-utils)
 (require 'init-evil)
 (require 'init-keybinding)
 (require 'init-ui)
-(require 'init-completion)
+(require 'init-buffer)
 (require 'init-edit)
 (require 'init-window)
 (require 'init-dired)
