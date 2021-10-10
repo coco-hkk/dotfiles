@@ -35,7 +35,6 @@
   :hook (prog-mode . rainbow-delimiters-mode))
 
 (use-package paren
-  :defer 1
   :config
   (set-face-attribute 'show-paren-match-expression nil :background "#363e4a")
   (show-paren-mode 1))

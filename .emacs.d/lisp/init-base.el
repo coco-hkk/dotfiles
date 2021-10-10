@@ -60,6 +60,7 @@
 
 ;;; 中英文等宽字体
 (defun set-font (english chinese english-size chinese-size)
+  "Set CHINESE and ENGLISH font size."
    (set-face-attribute 'default nil :font
 		       (format   "%s:pixelsize=%d"  english english-size))
    (dolist (charset '(kana han symbol cjk-misc bopomofo))
@@ -75,4 +76,4 @@
 (set-face-attribute 'variable-pitch nil :font "Dejavu Sans Mono" :height 160 :weight 'regular)
 
 (provide 'init-base)
-;;; init-general.el ends here
+;;; init-base.el ends here

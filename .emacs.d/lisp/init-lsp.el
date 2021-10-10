@@ -2,6 +2,9 @@
 ;;; Commentary:
 ;;; Code:
 
+(use-package flycheck
+  :hook (prog-mode . flycheck-mode))
+
 (use-package company
   :hook (prog-mode . company-mode)
   :bind (:map company-mode-map

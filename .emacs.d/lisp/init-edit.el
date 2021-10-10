@@ -8,7 +8,6 @@
 
 ;; auto save
 (use-package super-save
-  :defer 4
   :diminish super-save-mode
   :config
   (super-save-mode +1)
@@ -16,7 +15,6 @@
 
 ;; delete whitespace
 (use-package ws-butler
-  :defer 4
   :hook ((text-mode . ws-butler-mode)
          (prog-mode . ws-butler-mode)))
 

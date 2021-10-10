@@ -3,6 +3,7 @@
 ;;; Code:
 
 (defun es/evil-hook ()
+  "Evil hook."
   (dolist (mode '(custom-mode
                   eshell-mode
                   git-rebase-mode

@@ -160,7 +160,7 @@
   (add-hook 'org-timer-set-hook #'org-clock-in)
 
 (defun dw/get-todays-journal-file-name ()
-  "Gets the journal file name for today's date"
+  "Gets the journal file name for today's date."
   (interactive)
   (let* ((journal-file-name
            (expand-file-name
@@ -263,6 +263,7 @@
 
 ;;; org roam settings
 (use-package org-roam
+  :after org
   :init
   (setq org-roam-v2-ack t)
   :custom
