@@ -4,7 +4,7 @@
 
 ;; gpg 签名设置
 ;;(setq package-check-signature nil)    ; 禁掉签名
-(setq package-gnupghome-dir "/d/emacs-27.2/.emacs.d/elpa/gnupg")
+(setq package-gnupghome-dir "/d/emacs/.emacs.d/elpa/gnupg")
 
 (unless (featurep 'straight)
   ;; Bootstrap straight.el

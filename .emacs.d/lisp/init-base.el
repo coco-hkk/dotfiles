@@ -19,6 +19,9 @@
 (fset 'yes-or-no-p 'y-or-n-p)       ; 使用 'y/n' 代替 'yes/no'
 
 (setq-default fill-column 80)       ; 设置填充列
+(global-display-fill-column-indicator-mode) ; 80列显示
+
+(setq word-wrap-by-category t)      ; CJK wrap
 
 (electric-pair-mode t)              ; 自动补全括号
 
@@ -39,14 +42,13 @@
 
 ;; Enable line numbers for some modes
 ;; global setting: (global-display-line-numbers-mode t)
-(dolist (mode '(text-mode-hook
-                prog-mode-hook
+(dolist (mode '(prog-mode-hook
                 conf-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode 1))))
 
 ;; 禁掉一些模式的行号
-(dolist (mode '(org-mode-hook
-		eshell-mode-hook))
+(dolist (mode '(text-mode-hook
+                org-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
 (setq large-file-warning-threshold nil)    ; Don’t warn for large files (shows up when launching videos)
@@ -67,13 +69,15 @@
      (set-fontset-font (frame-parameter nil 'font) charset
 		       (font-spec :family chinese :size chinese-size))))
 
-(set-font   "Dejavu Sans Mono" "WenQuanYi Zen Hei Mono" 16 20)
+;;(set-font   "Dejavu Sans Mono" "WenQuanYi Zen Hei Mono" 16 20)
+
+(set-face-attribute 'default nil :font "ubuntu mono" :height 140)
 
 ;; Set the fixed pitch face
-(set-face-attribute 'fixed-pitch nil :font "ubuntu mono" :height 160)
+(set-face-attribute 'fixed-pitch nil :font "ubuntu mono" :height 1.0)
 
 ;; Set the variable pitch face
-(set-face-attribute 'variable-pitch nil :font "Dejavu Sans Mono" :height 160 :weight 'regular)
+(set-face-attribute 'variable-pitch nil :font "ubuntu mono" :height 1.0 :weight 'regular)
 
 (provide 'init-base)
 ;;; init-base.el ends here
