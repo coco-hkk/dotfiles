@@ -45,7 +45,7 @@
   ("C-x C-b" . ibuffer)
   :custom
   (ibuffer-expert t)
-  (ibuffer-movement-cycle nil)
+  (ibuffer-movement-cycle t)
   (ibuffer-show-empty-filter-groups nil)
   (ibuffer-saved-filter-groups
    '(("Default"
@@ -112,23 +112,23 @@
                 " "
                 filename-and-process))))
 
-(es/ctrl-c-keys
-  ;; ivy
-  "i"   '(:ignore t :which-key "ivy")
-  "ic"  '(counsel-compile :which-key "compile")
-  "ig"  '(counsel-git :which-key "git")
-  "ij"  '(counsel-git-grep :which-key "git grep")
-  "iL"  '(counsel-git-log :which-key "git log")
-  "ik"  '(counsel-rg :which-key "rg")
-  "im"  '(counsel-linux-app :which-key "linux app")
-  "in"  '(counsel-fzf :which-key "fzf")
-  "iJ"  '(counsel-file-jump :which-key "file jump")
-  "iw"  '(counsel-wmctrl :which-key "wmctrl")
-  "ir"  '(ivy-resume :which-key "ivy resume")
-  "ib"  '(counsel-bookmark :which-key "bookmark")
-  "id"  '(counsel-descbinds :which-key "descbinds")
-  "io"  '(counsel-outline :which-key "outline")
-  "iF"  '(counsel-org-file :which-key "org file"))
+(hkk/ctrl-c
+  ;; counsel
+  "c"   '(:ignore t :which-key "counsel")
+  "cc"  '(counsel-compile :which-key "compile")
+  "cg"  '(counsel-git :which-key "git")
+  "cj"  '(counsel-git-grep :which-key "git grep")
+  "cL"  '(counsel-git-log :which-key "git log")
+  "ck"  '(counsel-rg :which-key "rg")
+  "cm"  '(counsel-linux-app :which-key "linux app")
+  "cn"  '(counsel-fzf :which-key "fzf")
+  "cJ"  '(counsel-file-jump :which-key "file jump")
+  "cw"  '(counsel-wmctrl :which-key "wmctrl")
+  "cr"  '(ivy-resume :which-key "ivy resume")
+  "cb"  '(counsel-bookmark :which-key "bookmark")
+  "cd"  '(counsel-descbinds :which-key "descbinds")
+  "co"  '(counsel-outline :which-key "outline")
+  "cF"  '(counsel-org-file :which-key "org file"))
 
 (provide 'init-buffer)
 ;;; init-buffer.el ends here

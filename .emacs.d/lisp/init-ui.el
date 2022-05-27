@@ -2,43 +2,74 @@
 ;;; Commentary:
 ;;; Code:
 
+;;; 隐藏状态栏 minor 模式
+(use-package minions
+  :hook (doom-modeline-mode . minions-mode)
+  :custom
+  (doom-modeline-minor-modes t))
+
+;;; 图标和字体安装
+(use-package all-the-icons
+  :if (display-graphic-p))
+
+;;; 主题
 (use-package doom-themes
-  :init
-  (load-theme 'doom-dracula t)
+  :custom
+  (doom-themes-enable-bold t)
+  (doom-themes-enable-italic t)
+  (doom-themes-treemacs-theme "doom-atom")
   :config
+  (load-theme 'doom-dracula t)
   (doom-themes-visual-bell-config)
   (doom-themes-neotree-config)
-  (setq doom-themes-treemacs-theme "doom-atom")
   (doom-themes-treemacs-config)
   (doom-themes-org-config))
 
-(use-package all-the-icons
-  :when (display-graphic-p)
-  :demand t)
-
+;;; 状态栏配置
 (use-package doom-modeline
   :hook (after-init . doom-modeline-mode)
+  :custom-face
+  (doom-modeline ((t (:family "Segoe Print" :height 0.9))))
+  (doom-modeline-inactive ((t (:family "Segoe Print" :height 0.9))))
+  (doom-modeline-battery-full ((t (:inherit success :weight extra-bold))))
+  (doom-modeline-battery-warning ((t (:inherit warning :weight normal))))
   :custom
-  (doom-modeline-github nil)
-  (doom-modeline-mu4e nil)
-  (doom-modeline-persp-name nil)
-  (doom-modeline-major-mode-icon nil)
-  (doom-modeline-irc nil)
+  (doom-modeline-height 15)
+  (doom-modeline-bar-width 4)
+  (doom-modeline-enable-word-count t)
+  (doom-modeline-indent-info t)
   (doom-modeline-lsp t)
-  (doom-modeline-minor-modes t)
-  (doom-modeline-buffer-file-name-style 'file))
+  (doom-modeline-set-pdf-modeline)
+  (doom-modeline-buffer-file-name-style 'file)
+  (doom-modeline-project-detection 'project))
 
-(use-package minions
-  :hook (doom-modeline-mode . minions-mode))
-
-(use-package rainbow-delimiters
-  :hook (prog-mode . rainbow-delimiters-mode))
-
-(use-package paren
+;;; tab 标签配置
+(use-package centaur-tabs
+  :demand
+  :hook
+  (dashboard-mode . centaur-tabs-local-mode)
+  (term-mode . centaur-tabs-local-mode)
+  (calendar-mode . centaur-tabs-local-mode)
+  (org-agenda-mode . centaur-tabs-local-mode)
+  (helpful-mode . centaur-tabs-local-mode)
   :config
-  (set-face-attribute 'show-paren-match-expression nil :background "#363e4a")
-  (show-paren-mode 1))
+  (centaur-tabs-mode t)
+  (centaur-tabs-headline-match)
+  :custom
+  (centaur-tabs-style "slant")
+  (centaur-tabs-height 32)
+  (centaur-tabs-set-icons t)
+  (centaur-tabs-show-navigation-buttons t)
+  (centaur-tabs-set-bar 'under)
+  (x-underline-at-descent-line t)
+  (centaur-tabs-gray-out-icons 'buffer)
+  (centaur-tabs-cycle-scope 'tabs)
+  :bind
+  ("C-<prior>" . centaur-tabs-backward)
+  ("C-<next>" . centaur-tabs-forward))
 
+
+;;; 欢迎界面
 (use-package dashboard
   :init
   ;; Format: "(icon title help action face prefix suffix)"
@@ -46,8 +77,6 @@
                                         "GitHub" "Browse" (lambda (&rest _) (browse-url homepage-url)))
                                        (,(if (fboundp 'all-the-icons-octicon) (all-the-icons-octicon "heart"            :height 1.1 :v-adjust  0.0) "♥")
                                         "Stars" "Show stars" (lambda (&rest _) (browse-url stars-url)))
-                                       (,(if (fboundp 'all-the-icons-material) (all-the-icons-material "report_problem" :height 1.1 :v-adjust -0.2) "⚑")
-                                        "Issue" "Report issue" (lambda (&rest _) (browse-url issue-url)) warning)
                                        (,(if (fboundp 'all-the-icons-material) (all-the-icons-material "update"         :height 1.1 :v-adjust -0.2) "♺")
                                         "Update" "Update packages synchronously" (lambda (&rest _) (auto-package-update-now)) success))))
 
@@ -57,22 +86,31 @@
   :config
   (defconst homepage-url "https://github.com/coco-hkk/dotfiles")
   (defconst stars-url (concat homepage-url "/stargazers"))
-  (defconst issue-url (concat homepage-url "/issues/new"))
   :custom
-  (dashboard-startup-banner 'logo)
+  (dashboard-projects-backend 'projectile)                 ; 搭配 projectile 插件
+  (dashboard-banner-logo-title "Nothing Is Impossible")    ; 自定义个性签名
+  (dashboard-startup-banner "~/.emacs.d/img/logo.gif")     ; 自定义 logo
   (dashboard-set-heading-icons t)
   (dashboard-set-file-icons t)
   (dashboard-set-init-info t)
   (dashboard-set-navigator t)
-  (dashboard-items '((recents   . 10)
+  (dashboard-center-content t)
+  (dashboard-items '((recents   . 8)
                      (projects  . 5)
                      (bookmarks . 5))))
 
-(es/leader-key-def
+;;; 快捷键自定义
+(hkk/leader-key
   "t"  '(:ignore t :which-key "toggles")
-  "tw" 'whitespace-mode
+  "tw" '(whitespace-mode :which-key "切换 whitespace")
   "tr" '(treemacs :which-key "treemacs")
   "tt" '(counsel-load-theme :which-key "choose theme"))
+
+(hkk/ctrl-c
+  "t" '(:ignore t :which-key "centaur-tabs")
+  "ts" '(centaur-tabs-counsel-switch-group :which-key "switch-group")
+  "tp" '(centaur-tabs-group-by-projectile-project :which-key "group by project")
+  "tg" '(centaur-tabs-group-buffer-groups :which-key "group by buffer"))
 
 (provide 'init-ui)
 ;;; init-ui.el ends here

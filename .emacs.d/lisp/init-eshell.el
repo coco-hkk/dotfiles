@@ -34,7 +34,7 @@
   (eshell-toggle-use-projectile-root t)
   (eshell-toggle-run-command nil))
 
-(es/leader-key-def
+(hkk/leader-key
   ;; shell
   "s"   '(:ignore t :which-key "shell")
 

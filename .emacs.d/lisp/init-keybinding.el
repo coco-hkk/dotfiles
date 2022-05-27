@@ -5,24 +5,24 @@
 ;; ESC Cancels All
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 
+;; 快捷键提示包
 (use-package which-key
   :init (which-key-mode)
   :diminish which-key-mode
-  :config
-  (setq which-key-idle-delay 1))
+  :custom
+  (which-key-idle-delay 0.5))
 
 (use-package general
   :config
   (general-evil-setup t)
 
-  (general-create-definer es/leader-key-def
+  (general-create-definer hkk/leader-key
     :keymaps '(normal insert visual emacs)
     :prefix "SPC"
     :global-prefix "C-SPC")
 
-  (general-create-definer es/ctrl-c-keys
+  (general-create-definer hkk/ctrl-c
     :prefix "C-c"))
-
 
 (use-package hydra
   :after general)
@@ -33,7 +33,7 @@
   ("k" text-scale-decrease "out")
   ("f" nil "finished" :exit t))
 
-(es/leader-key-def
+(hkk/leader-key
   ;; hydra keybindings
   "ts" '(hydra-text-scale/body :which-key "scale text")
 

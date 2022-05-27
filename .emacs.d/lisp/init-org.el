@@ -3,19 +3,18 @@
 ;;; Code:
 
 ;; Turn on indentation and auto-fill mode for Org files
-(defun es/org-mode-setup ()
+(defun hkk/org-mode-setup ()
+  "Org Mode Setup."
   (org-indent-mode)
   (variable-pitch-mode 1)
   (auto-fill-mode 0)
   (visual-line-mode 1)
-  (setq evil-auto-indent nil)
-
-  ; (diminish org-indent-mode)
+  ;;(setq evil-auto-indent nil)
   )
 
 ;; font settings
-(defun es/org-font-setup ()
-  "Org Font Setup"
+(defun hkk/org-font-setup ()
+  "Org Font Setup."
   (set-face-attribute 'org-document-title nil :font "ubuntu mono" :weight 'bold :height 1.3)
 
   (dolist (face '((org-level-1 . 1.25)
@@ -45,11 +44,13 @@
   (set-face-attribute 'org-column nil :background nil)
   (set-face-attribute 'org-column-title nil :background nil))
 
+(use-package toc-org
+  :hook (org-mode . toc-org-mode))
+
 (use-package org
-  :hook org-mode
   :config
-  (es/org-mode-setup)
-  (es/org-font-setup)
+  (hkk/org-mode-setup)
+  (hkk/org-font-setup)
 
   (setq org-ellipsis " ▾"
         org-hide-emphasis-markers t
@@ -67,8 +68,8 @@
         '((nil :maxlevel . 1)
           ("org-agenda-files" :maxlevel . 1)))
 
-  ;; Save Org buffers after refiling!
-  (advice-add 'org-refile :after 'org-save-all-org-buffers)
+  (setq org-outline-path-complete-in-steps nil)
+  (setq org-refile-use-outline-path t)
 
   ;; org babel
   (org-babel-do-load-languages
@@ -76,6 +77,7 @@
    '((emacs-lisp . t)
      (python . t)))
 
+  ;; org template
   (require 'org-tempo)
   (add-to-list 'org-structure-template-alist '("sh" . "src sh"))
   (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
@@ -107,12 +109,14 @@
                       (visual-fill-column-mode 1))))
 
 ;; org present settings
-(defun es/org-present-prepare-slide ()
+(defun hkk/org-present-prepare-slide ()
+  "Org present slide settings."
   (org-overview)
   (org-show-entry)
   (org-show-children))
 
-(defun es/org-present-hook ()
+(defun hkk/org-present-hook ()
+  "Org present hook settings."
   (setq-local face-remapping-alist '((default (:height 1.5) variable-pitch)
                                      (header-line (:height 4.5) variable-pitch)
                                      (org-document-title (:height 1.75) org-document-title)
@@ -120,39 +124,41 @@
                                      (org-verbatim (:height 1.55) org-verbatim)
                                      (org-block (:height 1.25) org-block)
                                      (org-block-begin-line (:height 0.7) org-block)))
+  (setq header-line-format " ")
   (org-present-hide-cursor)
   (org-display-inline-images)
   (org-present-read-only))
 
-(defun es/org-present-quit-hook ()
+(defun hkk/org-present-quit-hook ()
+  "Org present quit hook settings."
   (setq-local face-remapping-alist '((default variable-pitch default)))
+  (setq header-line-format nil)
   (org-remove-inline-images)
   (org-present-show-cursor)
   (org-present-read-write))
 
-(defun es/org-present-prev ()
+(defun hkk/org-present-prev ()
+  "Org present prev settings."
   (interactive)
   (org-present-prev)
-  (es/org-present-prepare-slide))
+  (hkk/org-present-prepare-slide))
 
-(defun es/org-present-next ()
+(defun hkk/org-present-next ()
+  "Org present next settings."
   (interactive)
   (org-present-next)
-  (es/org-present-prepare-slide))
+  (hkk/org-present-prepare-slide))
 
 (use-package org-present
   :after org
   :bind (:map org-present-mode-keymap
-              ("C-c C-j" . es/org-present-next)
-              ("C-c C-k" . es/org-present-prev))
-  :hook ((org-present-mode . es/org-present-hook)
-         (org-present-mode-quit . es/org-present-quit-hook)))
-
-(use-package toc-org
-  :hook (org-mode . toc-org-mode))
+              ("C-c C-j" . hkk/org-present-next)
+              ("C-c C-k" . hkk/org-present-prev))
+  :hook ((org-present-mode . hkk/org-present-hook)
+         (org-present-mode-quit . hkk/org-present-quit-hook)))
 
 ;; org key binding
-(es/leader-key-def
+(hkk/leader-key
   ;; org mode
   "o"   '(:ignore t :which-key "org mode")
 
@@ -160,8 +166,6 @@
   "oil" '(org-insert-link :which-key "insert link")
 
   "on"  '(org-toggle-narrow-to-subtree :which-key "toggle narrow")
-
-  "os"  '(dw/counsel-rg-org-files :which-key "search notes")
 
   "oa"  '(org-agenda :which-key "agenda status")
   "oc"  '(org-capture t :which-key "capture")

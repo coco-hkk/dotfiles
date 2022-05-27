@@ -2,15 +2,18 @@
 ;;; Commentary:
 ;;; Code:
 
+;; 语法检查
+;; 需要安装语法检查工具，如 pylint 和 eslint
 (use-package flycheck
   :hook (prog-mode . flycheck-mode))
 
+;; 自动补全
 (use-package company
   :hook (prog-mode . company-mode)
-  :bind (:map company-mode-map
+  :bind (
+         :map company-mode-map
          ([remap completion-at-point] . company-complete)
          :map company-active-map
-         ("C-s"     . company-filter-candidates)
          ([tab]     . company-complete-common-or-cycle)
          ([backtab] . company-select-previous-or-abort))
   :config
@@ -20,36 +23,33 @@
       (apply func args)))
   :custom
   (company-idle-delay 0)
-  ;; Easy navigation to candidates with M-<n>
-  (company-show-quick-access t)
   (company-require-match nil)
+  (company-show-quick-access t)
+
   (company-minimum-prefix-length 3)
   (company-tooltip-width-grow-only t)
   (company-tooltip-align-annotations t)
-  ;; complete `abbrev' only in current buffer and make dabbrev case-sensitive
-  (company-dabbrev-other-buffers nil)
-  (company-dabbrev-ignore-case nil)
-  (company-dabbrev-downcase nil)
-  ;; make dabbrev-code case-sensitive
-  (company-dabbrev-code-ignore-case nil)
   (company-dabbrev-code-everywhere t)
-  ;; call `tempo-expand-if-complete' after completion
   (company-tempo-expand t)
-  ;; Stop annoying me
-  (company-etags-use-main-table-list nil)
-  ;; No icons
-  (company-format-margin-function nil)
-  (company-backends '((company-capf :with company-tempo)
-                      company-files
-                      (company-dabbrev-code company-keywords)
-                      company-dabbrev
-                      ;; HACK: prevent `lsp-mode' to add `company-capf' back.
-                      company-capf)))
+
+  (company-frontends
+   '(company-preview-frontend
+     company-echo-metadata-frontend))
+
+  (company-backends
+   '(company-capf
+     company-files
+     company-dabbrev)))
+
+(use-package company-box
+  :hook (company-mode . company-box-mode)
+  :custom
+  (company-box-icons-alist 'company-box-icons-all-the-icons))
 
 ;; lsp-mode
 (use-package lsp-mode
-  :commands lsp
-  :hook ((markdown-mode c-mode c++-mode) . lsp-deferred)
+  :commands (lsp lsp-deferred)
+  :hook ((typescript-mode js2-mode web-mode) . lsp)
   :bind (:map lsp-mode-map
               ("TAB" . completion-at-point))
   :custom
@@ -57,43 +57,49 @@
   :config
   (lsp-enable-which-key-integration t))
 
-(use-package lsp-treemacs
-  :after lsp)
-
 (use-package lsp-ui
   :after lsp
   :hook (lsp-mode . lsp-ui-mode)
-  :config
-  (setq lsp-ui-sideline-enable t)
-  (setq lsp-ui-sideline-show-hover nil)
-  (setq lsp-ui-doc-position 'bottom)
+  :custom-face
+  (lsp-ui-sideline-symbol ((t (:foreground "grey" :box (:line-width (1 . -1) :color "grey") :height 0.99))))
+  :custom
+  (lsp-ui-sideline-enable t)
+  (lsp-ui-sideline-ignore-duplicate t)
+  (lsp-ui-sideline-show-code-actions t)
+  (lsp-ui-sideline-show-hover t)
+  (lsp-ui-sideline-actions-icon "")
+
+  (lsp-ui-doc-show-with-cursor t)
+  (lsp-ui-doc-position 'bottom)
+  (lsp-ui-doc-use-webkit t)
   (lsp-ui-doc-show))
 
-(use-package eglot
-  :hook ((c-mode . eglot-ensure)
-         (c++-mode . eglot-ensure)))
+(use-package posframe)
 
-(use-package dap-mode
-  :after lsp
+(use-package lsp-bridge
+  :straight (lsp-bridge :type git :host github :repo "manateelazycat/lsp-bridge" :file ("*"))
   :custom
-  (lsp-enable-dap-auto-configure nil)
+  (lsp-bridge-completion-provider 'company)
   :config
-  (dap-ui-mode 1)
-  (dap-tooltip-mode 1)
-  (require 'dap-node)
-  (dap-node-setup))
+  (require 'lsp-bridge-icon)
+  (global-lsp-bridge-mode)
 
-(es/leader-key-def
+  ;; For Xref support
+  (add-hook 'lsp-bridge-mode-hook (lambda ()
+                                    (add-hook 'xref-backend-functions #'lsp-bridge-xref-backend nil t))))
+
+(hkk/ctrl-c
+  ;; flycheck
+  "!"  '(:ignore t :which-key "flycheck")
+
   ;; lsp
   "l"  '(:ignore t :which-key "lsp")
-  "ld" 'xref-find-definitions
-  "lr" 'xref-find-references
-  "ln" 'lsp-ui-find-next-reference
-  "lp" 'lsp-ui-find-prev-reference
-  "ls" 'counsel-imenu
-  "le" 'lsp-ui-flycheck-list
-  "lS" 'lsp-ui-sideline-mode
-  "lX" 'lsp-execute-code-action)
+  "ld" '(lsp-find-definition :which-key "definition")
+  "lr" '(lsp-find-references :which-key "references")
+  "lt" '(lsp-find-type-definition :which-key "type def")
+  "ls" '(lsp-ui-doc-show :which-key "doc show")
+  "lh" '(lsp-ui-doc-hide :which-key "doc hide")
+  "li" '(lsp-ui-imenu :which-key "imenu"))
 
 (provide 'init-lsp)
 ;;; init-lsp.el ends here
