@@ -34,11 +34,5 @@
   (eshell-toggle-use-projectile-root t)
   (eshell-toggle-run-command nil))
 
-(hkk/leader-key
-  ;; shell
-  "s"   '(:ignore t :which-key "shell")
-
-  "st"  '(eshell-toggle :which-key "toggle eshell"))
-
 (provide 'init-eshell)
 ;;; init-eshell.el ends here

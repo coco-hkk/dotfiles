@@ -1,5 +1,3 @@
 # dotfiles
 
-点配置文件。
-
-1. Emacs 配置 .emacs.d
+1. .emacs.d 配置文件

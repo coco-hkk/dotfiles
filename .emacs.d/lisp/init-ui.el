@@ -21,7 +21,6 @@
   :config
   (load-theme 'doom-dracula t)
   (doom-themes-visual-bell-config)
-  (doom-themes-neotree-config)
   (doom-themes-treemacs-config)
   (doom-themes-org-config))
 
@@ -32,16 +31,13 @@
   (doom-modeline ((t (:family "Segoe Print" :height 0.9))))
   (doom-modeline-inactive ((t (:family "Segoe Print" :height 0.9))))
   (doom-modeline-battery-full ((t (:inherit success :weight extra-bold))))
-  (doom-modeline-battery-warning ((t (:inherit warning :weight normal))))
   :custom
-  (doom-modeline-height 15)
-  (doom-modeline-bar-width 4)
+  (doom-modeline-height 2)
   (doom-modeline-enable-word-count t)
   (doom-modeline-indent-info t)
   (doom-modeline-lsp t)
-  (doom-modeline-set-pdf-modeline)
-  (doom-modeline-buffer-file-name-style 'file)
-  (doom-modeline-project-detection 'project))
+  (doom-modeline-buffer-file-name-style 'file-name)
+  (doom-modeline-project-detection 'ffip))
 
 ;;; tab 标签配置
 (use-package centaur-tabs
@@ -100,12 +96,6 @@
                      (bookmarks . 5))))
 
 ;;; 快捷键自定义
-(hkk/leader-key
-  "t"  '(:ignore t :which-key "toggles")
-  "tw" '(whitespace-mode :which-key "切换 whitespace")
-  "tr" '(treemacs :which-key "treemacs")
-  "tt" '(counsel-load-theme :which-key "choose theme"))
-
 (hkk/ctrl-c
   "t" '(:ignore t :which-key "centaur-tabs")
   "ts" '(centaur-tabs-counsel-switch-group :which-key "switch-group")

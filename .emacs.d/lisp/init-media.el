@@ -53,15 +53,5 @@
                   ".rm" ".rmvb" ".mp4" ".flac" ".vob" ".m4a" ".flv" ".ogv" ".pls"))
     "mplayer" "-slave" "-quiet" "-really-quiet" "-fullscreen"))
 
-(hkk/ctrl-c
-  "m"  '(:ignore t :which-key "media")
-
-  "mb" '(emms-smart-browse :which-key "智能浏览")
-  "mt" '(emms-add-directory-tree :which-key "音视频媒体库")
-  "mh" '(emms-previous :which-key "上一首")
-  "ml" '(emms-next :which-key "下一首")
-  "mx" '(emms-toggle-repeat-playlist :which-key "切换重复播放列表")
-  "my" '(emms-toggle-random-playlist :which-key "切换随机播放列表"))
-
 (provide 'init-media)
 ;;; init-media.el ends here

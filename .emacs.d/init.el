@@ -19,7 +19,7 @@
 (require 'init-base)
 (require 'init-builtin)
 (require 'init-evil)
-(require 'init-keybinding)
+(require 'init-bindings)
 (require 'init-ui)
 (require 'init-buffer)
 (require 'init-window)
@@ -30,15 +30,14 @@
 (require 'init-org)
 (require 'init-org-roam)
 (require 'init-markdown)
-(require 'init-lsp)
+(require 'init-treemacs)
 (require 'init-program)
 (require 'init-projectile)
 (require 'init-yasnippet)
 (require 'init-magit)
 (require 'init-utils)
-
-;; (require 'init-terminal)
-;; (require 'init-mysql)
+(require 'init-dict)
+(require 'init-tts)
 
 ;; Make gc pauses faster by decreasing the threshold.
 (setq gc-cons-threshold (* 2 1000 1000))

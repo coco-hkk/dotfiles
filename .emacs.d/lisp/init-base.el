@@ -69,12 +69,5 @@
 (set-face-attribute 'fixed-pitch nil :font "ubuntu mono" :height 1.0)
 (set-face-attribute 'variable-pitch nil :font "ubuntu mono" :height 1.0 :weight 'regular)
 
-;; 代理设置
-;; (setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")             ; 不加可能有问题
-;; (setq url-proxy-services
-;;       '(("no_proxy" . "^\\(192\\.168\\..*\\)")
-;;         ("http" . "127.0.0.1:10800")
-;;         ("https" . "127.0.0.1:10800")))
-
 (provide 'init-base)
 ;;; init-base.el ends here

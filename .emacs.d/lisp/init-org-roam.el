@@ -3,88 +3,29 @@
 ;;; Code:
 
 (setq org-roam-directory "f:/GitHub/roam/note")
-(setq org-roam-dailies-directory "f:/GitHub/roam/daily")
+(setq org-roam-dailies-directory "f:/GitHub/roam/dailies")
 (setq org-roam-graph-executable "d:/Graphviz/bin/dot.exe")
 
 (use-package org-roam
-  :hook
-  (after-init . org-roam-mode)
   :custom
   (org-roam-completion-everywhere t)
-  (org-roam-completion-system 'default)
 
   (org-roam-capture-templates
-   '(("d" "default" plain
-      #'org-roam-capture--get-point
+   '(("n" "note" plain
       "%?"
-      :file-name "${slug}.org"
-      :head "#+title: ${title}\n"
+      :if-new (file+head "${slug}.org"
+                         "#+title: ${title}\n#+date: %u\n")
       :unnarrowed t)
-     ("ll" "link note" plain
-      #'org-roam-capture--get-point
-      "* %^{Link}"
-      :file-name "Inbox"
-      :olp ("Links")
-      :unnarrowed t
-      :immediate-finish)
-     ("lt" "link task" entry
-      #'org-roam-capture--get-point
-      "* TODO %^{Link}"
-      :file-name "Inbox"
-      :olp ("Tasks")
-      :unnarrowed t
-      :immediate-finish)))
+     ("a" "article" plain "%?"
+      :if-new
+      (file+head "${title}.org" "#+title: ${title}\n#+filetags: :article:\n")
+      :unnarrowed t)))
 
   (org-roam-dailies-capture-templates
-   '(("d" "default" entry
-      #'org-roam-capture--get-point
-      "* %?"
-      :file-name "daily/%<%Y-%m-%d>"
-      :head "#+title: %<%Y-%m-%d %a>\n\n[[roam:%<%Y-%B>]]\n\n")
-     ("t" "Task" entry
-      #'org-roam-capture--get-point
-      "* TODO %?\n  %U\n  %a\n  %i"
-      :file-name "daily/%<%Y-%m-%d>"
-      :olp ("Tasks")
-      :empty-lines 1
-      :head "#+title: %<%Y-%m-%d %a>\n\n[[roam:%<%Y-%B>]]\n\n")
-     ("j" "journal" entry
-      #'org-roam-capture--get-point
-      "* %<%I:%M %p> - Journal  :journal:\n\n%?\n\n"
-      :file-name "daily/%<%Y-%m-%d>"
-      :olp ("Log")
-      :head "#+title: %<%Y-%m-%d %a>\n\n[[roam:%<%Y-%B>]]\n\n")
-     ("l" "log entry" entry
-      #'org-roam-capture--get-point
-      "* %<%I:%M %p> - %?"
-      :file-name "daily/%<%Y-%m-%d>"
-      :olp ("Log")
-      :head "#+title: %<%Y-%m-%d %a>\n\n[[roam:%<%Y-%B>]]\n\n")
-     ("m" "meeting" entry
-      #'org-roam-capture--get-point
-      "* %<%I:%M %p> - %^{Meeting Title}  :meetings:\n\n%?\n\n"
-      :file-name "daily/%<%Y-%m-%d>"
-      :olp ("Log")
-      :head "#+title: %<%Y-%m-%d %a>\n\n[[roam:%<%Y-%B>]]\n\n")))
-
-  :bind (("C-c o l" . org-roam-buffer-toggle)
-         ("C-c o f" . org-roam-node-find)
-         ("C-c o i" . org-roam-node-insert)
-         ("C-c o c" . org-roam-capture)
-         ("C-c o g" . org-roam-graph)
-         ("C-M-i" . completion-at-point)
-         :map org-roam-mode-map
-         (("C-c o l"   . org-roam)
-          ("C-c o f"   . org-roam-find-file)
-          ("C-c o d"   . org-roam-dailies-find-date)
-          ("C-c o c"   . org-roam-dailies-capture-today)
-          ("C-c o C r" . org-roam-dailies-capture-tomorrow)
-          ("C-c o t"   . org-roam-dailies-find-today)
-          ("C-c o y"   . org-roam-dailies-find-yesterday)
-          ("C-c o r"   . org-roam-dailies-find-tomorrow))
-         :map org-mode-map
-         (("C-c o i" . org-roam-insert)
-          ("C-c o I" . org-roam-insert-immediate)))
+      '(("d" "default" entry
+         "* %?"
+         :target (file+head "%<%Y-%m-%d>.org"
+                            "#+title: %<%Y-%m-%d>\n"))))
   :config
   (org-roam-db-autosync-mode)
 
@@ -99,7 +40,7 @@
   (setq org-roam-ui-sync-theme t
         org-roam-ui-follow t
         org-roam-ui-update-on-save t
-        org-roam-ui-open-on-start nil))
+        org-roam-ui-open-on-start t))
 
 ;; 查找 org roam
 (use-package deft
@@ -116,7 +57,7 @@
   :after (org-roam)
   :hook (org-roam-mode . org-roam-bibtex-mode)
   :config
-  ; (require 'org-ref))
+                                        ; (require 'org-ref))
   (setq orb-preformat-keywords
         '("=key=" "title" "url" "file" "author-or-editor" "keywords"))
   (setq orb-templates
@@ -137,12 +78,8 @@ Time-stamp: <>
   :NOTER_DOCUMENT: %(orb-process-file-field \"${=key=}\")
   :NOTER_PAGE:
   :END:
-
 "
-
            :unnarrowed t))))
-
-
 
 ;;自动创建笔记的创建时间和修改时间
 (use-package org-roam-timestamps
@@ -156,9 +93,51 @@ Time-stamp: <>
   :after org-roam
   :straight (org-transclusion :type git :host github :repo "nobiot/org-transclusion"))
 
-(hkk/ctrl-c
+(defhydra hydra-org-roam (:color pink
+                                 :exit t
+                                 :hint nil)
+  "
+^Dailies^        ^Capture^       ^Jump^
+^^^^^^^^-------------------------------------------------
+_t_: today       _T_: today       _m_: current month
+_r_: tomorrow    _R_: tomorrow    _e_: current year
+_y_: yesterday   _Y_: yesterday   ^ ^
+_d_: date        ^ ^              ^ ^
+
+^Others^
+^^^^^^^^-------------------------------------------------
+_i_: node insert       _I_: insert immediate
+_l_: buffer toggle     _f_: node find
+_c_: capture           _g_: graph
+_u_: UI open           _U_: UI mode
+
+_a_: completion
+"
+  ("t" org-roam-dailies-goto-today)
+  ("r" org-roam-dailies-goto-tomorrow)
+  ("y" org-roam-dailies-goto-yesterday)
+  ("d" org-roam-dailies-goto-date)
+  ("T" org-roam-dailies-capture-today)
+  ("R" org-roam-dailies-capture-tomorrow)
+  ("Y" org-roam-dailies-capture-yesterday)
+  ("m" dw/org-roam-goto-month)
+  ("e" dw/org-roam-goto-year)
+
+  ("i" org-roam-node-insert)
+  ("I" org-roam-insert-immediate)
+  ("l" org-roam-buffer-toggle)
+  ("f" org-roam-node-find)
+  ("c" org-roam-capture)
+  ("g" org-roam-graph)
+
+  ("u" org-roam-ui-open)
+  ("U" org-roam-ui-mode)
+
+  ("a" completion-at-point))
+
+(hkk/leader-key
   ;; org roam
-  "o"   '(:ignore t :which-key "org roam"))
+  "r" '(hydra-org-roam/body :which-key "org roam"))
 
 (provide 'init-org-roam)
 ;;; init-org-roam.el ends here

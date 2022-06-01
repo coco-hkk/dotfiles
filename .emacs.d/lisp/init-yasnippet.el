@@ -6,8 +6,7 @@
   :hook
   (prog-mode . yas-minor-mode)
   :custom
-  (yas-snippet-dirs '("~/mySnippets"))
-  (yas-indent-line (quote none))
+  (yas-indent-line 'fixed)
   :config
   (yas-global-mode))
 

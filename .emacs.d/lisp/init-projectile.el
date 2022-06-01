@@ -3,7 +3,6 @@
 ;;; Code:
 
 (use-package projectile
-  :diminish projectile-mode
   :config
   (projectile-mode)
   :custom
@@ -13,9 +12,7 @@
   :init
   ;; NOTE: Set this to the folder where you keep your Git repos!
   (when (file-directory-p "f:/github")
-    (setq projectile-project-search-path '("f:/github")))
-  (setq projectile-switch-project-action (lambda () ((persp-switch (projectile-project-name))
-                                                       (magit-status)))))
+    (setq projectile-project-search-path '("f:/github"))))
 
 (use-package counsel-projectile
   :after projectile

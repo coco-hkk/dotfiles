@@ -20,11 +20,7 @@
   (dolist (face '((org-level-1 . 1.25)
                   (org-level-2 . 1.2)
                   (org-level-3 . 1.15)
-                  (org-level-4 . 1.1)
-                  (org-level-5 . 1.05)
-                  (org-level-6 . 1.1)
-                  (org-level-7 . 1.1)
-                  (org-level-8 . 1.1)))
+                  (org-level-4 . 1.1)))
     (set-face-attribute (car face) nil :font "ubuntu mono" :weight 'medium :height (cdr face)))
 
   (require 'org-indent)
@@ -104,7 +100,7 @@
 ;; edit org like document
 (use-package visual-fill-column
   :hook (org-mode . (lambda ()
-                      (setq visual-fill-column-width 100)
+                      (setq visual-fill-column-width 120)
                       (setq visual-fill-column-center-text t)
                       (visual-fill-column-mode 1))))
 
@@ -117,8 +113,8 @@
 
 (defun hkk/org-present-hook ()
   "Org present hook settings."
-  (setq-local face-remapping-alist '((default (:height 1.5) variable-pitch)
-                                     (header-line (:height 4.5) variable-pitch)
+  (setq-local face-remapping-alist '((default (:height 1.2) variable-pitch)
+                                     (header-line (:height 3.5) variable-pitch)
                                      (org-document-title (:height 1.75) org-document-title)
                                      (org-code (:height 1.55) org-code)
                                      (org-verbatim (:height 1.55) org-verbatim)
@@ -157,23 +153,28 @@
   :hook ((org-present-mode . hkk/org-present-hook)
          (org-present-mode-quit . hkk/org-present-quit-hook)))
 
-;; org key binding
+(defhydra hydra-org (:color pink
+                            :exit t
+                            :hint nil)
+  "
+^Org mode
+^^^^^^^-----------------------------------------------------------------
+_a_: agenda status        _c_: capture             _i_: insert link
+_t_: todo list            _n_: toggle subtree      _x_: export dispatch
+_p_: present              _q_: present quit
+"
+  ("a" org-agenda)
+  ("c" org-capture)
+  ("t" org-todo-list)
+  ("x" org-export-dispatch)
+  ("p" org-present)
+  ("q" org-present-quit)
+  ("i" org-insert-link)
+  ("n" org-toggle-narrow-to-subtree))
+
 (hkk/leader-key
-  ;; org mode
-  "o"   '(:ignore t :which-key "org mode")
-
-  "oi"  '(:ignore t :which-key "insert")
-  "oil" '(org-insert-link :which-key "insert link")
-
-  "on"  '(org-toggle-narrow-to-subtree :which-key "toggle narrow")
-
-  "oa"  '(org-agenda :which-key "agenda status")
-  "oc"  '(org-capture t :which-key "capture")
-  "ot"  '(org-todo-list :which-key "todos")
-  "ox"  '(org-export-dispatch t :which-key "export")
-
-  "op"  '(org-present :which-key "present")
-  "oq"  '(org-present-quit :which-key "present quit"))
+  ;; hydra keybindings
+  "o" '(hydra-org/body :which-key "org"))
 
 (provide 'init-org)
 ;;; init-org.el ends here

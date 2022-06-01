@@ -2,14 +2,6 @@
 ;;; Commentary:
 ;;; Code:
 
-(setq display-buffer-base-action
-      '(display-buffer-reuse-mode-window
-        display-buffer-reuse-window
-        display-buffer-same-window))
-
-;; If a popup does happen, don't resize windows to be equal-sized
-(setq even-window-sizes nil)
-
 ;; 窗口间跳转
 (use-package ace-window
   :bind
