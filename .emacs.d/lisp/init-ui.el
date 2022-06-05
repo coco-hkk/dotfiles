@@ -17,11 +17,12 @@
   :custom
   (doom-themes-enable-bold t)
   (doom-themes-enable-italic t)
-  (doom-themes-treemacs-theme "doom-atom")
+  (doom-themes-padded-modeline t)
   :config
   (load-theme 'doom-dracula t)
   (doom-themes-visual-bell-config)
-  (doom-themes-treemacs-config)
+  ;;(doom-themes-treemacs-config)
+  ;;(setq doom-themes-treemacs-theme "doom-atom")
   (doom-themes-org-config))
 
 ;;; 状态栏配置
@@ -32,38 +33,81 @@
   (doom-modeline-inactive ((t (:family "Segoe Print" :height 0.9))))
   (doom-modeline-battery-full ((t (:inherit success :weight extra-bold))))
   :custom
-  (doom-modeline-height 2)
   (doom-modeline-enable-word-count t)
+  (doom-modeline-minor-modes t)
+  (doom-modeline-hud t)
   (doom-modeline-indent-info t)
-  (doom-modeline-lsp t)
+  (auto-revert-check-vc-info t)
   (doom-modeline-buffer-file-name-style 'file-name)
-  (doom-modeline-project-detection 'ffip))
+  (doom-modeline-project-detection 'projectile))
 
 ;;; tab 标签配置
 (use-package centaur-tabs
   :demand
   :hook
   (dashboard-mode . centaur-tabs-local-mode)
+  (dired-mode . centaur-tabs-local-mode)
   (term-mode . centaur-tabs-local-mode)
   (calendar-mode . centaur-tabs-local-mode)
   (org-agenda-mode . centaur-tabs-local-mode)
   (helpful-mode . centaur-tabs-local-mode)
+  (dap-mode . centaur-tabs-local-mode)
+  :bind
+  ("C-<prior>" . centaur-tabs-backward)
+  ("C-<next>" . centaur-tabs-forward)
+  :custom
+  (centaur-tabs-style "wave")
+  (centaur-tabs-height 24)
+  (centaur-tabs-set-icons t)
+  (centaur-tabs-plain-icons t)
+
+  (centaur-tabs-gray-out-icons 'buffer)
+  (centaur-tabs-set-bar 'under)
+  (x-underline-at-descent-line t)
+
+  (centaur-tabs-set-close-button nil)           ;; 不显示关闭按钮
+  (centaur-tabs-adjust-buffer-order t)
+
+  (centaur-tabs-show-navigation-buttons t)
+  (centaur-tabs-show-count t)
+  (centaur-tabs-cycle-scope 'tab)
   :config
   (centaur-tabs-mode t)
   (centaur-tabs-headline-match)
-  :custom
-  (centaur-tabs-style "slant")
-  (centaur-tabs-height 32)
-  (centaur-tabs-set-icons t)
-  (centaur-tabs-show-navigation-buttons t)
-  (centaur-tabs-set-bar 'under)
-  (x-underline-at-descent-line t)
-  (centaur-tabs-gray-out-icons 'buffer)
-  (centaur-tabs-cycle-scope 'tabs)
-  :bind
-  ("C-<prior>" . centaur-tabs-backward)
-  ("C-<next>" . centaur-tabs-forward))
 
+  (defun centaur-tabs-buffer-groups ()
+    (list
+     (cond
+      ((or (string-equal "*" (substring (buffer-name) 0 1))
+           (memq major-mode '(magit-process-mode
+                              magit-status-mode
+                              magit-diff-mode
+                              magit-log-mode
+                              magit-file-mode
+                              magit-blob-mode
+                              magit-blame-mode
+                              )))
+       "Emacs")
+      ((derived-mode-p 'prog-mode)
+       "Editing")
+      ((derived-mode-p 'dired-mode)
+       "Dired")
+      ((memq major-mode '(helpful-mode
+                          help-mode))
+       "Help")
+      ((memq major-mode '(org-mode
+                          org-agenda-clockreport-mode
+                          org-src-mode
+                          org-agenda-mode
+                          org-beamer-mode
+                          org-indent-mode
+                          org-bullets-mode
+                          org-cdlatex-mode
+                          org-agenda-log-mode
+                          diary-mode))
+       "OrgMode")
+      (t
+       (centaur-tabs-get-group-name (current-buffer)))))))
 
 ;;; 欢迎界面
 (use-package dashboard
@@ -83,9 +127,9 @@
   (defconst homepage-url "https://github.com/coco-hkk/dotfiles")
   (defconst stars-url (concat homepage-url "/stargazers"))
   :custom
-  (dashboard-projects-backend 'projectile)                 ; 搭配 projectile 插件
   (dashboard-banner-logo-title "Nothing Is Impossible")    ; 自定义个性签名
   (dashboard-startup-banner "~/.emacs.d/img/logo.gif")     ; 自定义 logo
+  (dashboard-projects-backend 'projectile)                 ; 搭配 projectile 插件
   (dashboard-set-heading-icons t)
   (dashboard-set-file-icons t)
   (dashboard-set-init-info t)
@@ -95,12 +139,26 @@
                      (projects  . 5)
                      (bookmarks . 5))))
 
-;;; 快捷键自定义
-(hkk/ctrl-c
-  "t" '(:ignore t :which-key "centaur-tabs")
-  "ts" '(centaur-tabs-counsel-switch-group :which-key "switch-group")
-  "tp" '(centaur-tabs-group-by-projectile-project :which-key "group by project")
-  "tg" '(centaur-tabs-group-buffer-groups :which-key "group by buffer"))
+(defhydra hydra-ui (:color pink
+                           :exit t
+                           :hint nil)
+  "
+  ^Centaur^
+-----------------------------------------------------------------
+_cs_: switch group
+_cp_: group by project
+_cg_: group by buffer
+
+"
+  ("cs" centaur-tabs-counsel-switch-group)
+  ("cp" centaur-tabs-group-by-projectile-project)
+  ("cg" centaur-tabs-group-buffer-groups)
+
+  ("q" nil "quit" :color pink))
+
+(hkk/leader-key
+  ;; hydra keybindings
+  "u" '(hydra-ui/body :which-key "UI"))
 
 (provide 'init-ui)
 ;;; init-ui.el ends here

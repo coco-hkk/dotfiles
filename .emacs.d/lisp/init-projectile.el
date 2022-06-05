@@ -7,12 +7,10 @@
   (projectile-mode)
   :custom
   (projectile-completion-system 'ivy)
+  (projectile-project-search-path '("f:/github" "d:/Emacs/.emacs.d" "f:/Test"))
+  (projectile-sort-order 'recentf)
   :bind-keymap
-  ("C-c p" . projectile-command-map)
-  :init
-  ;; NOTE: Set this to the folder where you keep your Git repos!
-  (when (file-directory-p "f:/github")
-    (setq projectile-project-search-path '("f:/github"))))
+  ("C-c p" . projectile-command-map))
 
 (use-package counsel-projectile
   :after projectile

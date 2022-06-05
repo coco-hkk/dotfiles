@@ -11,9 +11,9 @@
 (setq eaf-enable-debug t)
 
 (require 'eaf-browser)
-;(setq eaf-proxy-type "socks5")
-;(setq eaf-proxy-host "127.0.0.1")
-;(setq eaf-proxy-port "10800")
+;;(setq eaf-proxy-type "socks5")
+;;(setq eaf-proxy-host "127.0.0.1")
+;;(setq eaf-proxy-port "10800")
 (setq browse-url-browser-function 'eaf-open-browser)
 (defalias 'browse-web #'eaf-open-browser)
 
@@ -37,9 +37,10 @@
 (require 'eaf-org-previewer)
 (require 'eaf-markdown-previewer)
 
-(defhydra hydra-eaf (:color pink
-                            :exit t
-                            :hint nil)
+(defhydra hydra-eaf (
+                     :color pink
+                     :exit t
+                     :hint nil)
   "
 ^browse^        ^mindmap^       ^File Manager^
 ^^^^^^^^-------------------------------------------------
@@ -52,7 +53,9 @@ _B_: history    _M_: open
   ("B" eaf-open-browser-with-history)
 
   ("m" eaf-create-mindmap)
-  ("M" eaf-open-mindmap))
+  ("M" eaf-open-mindmap)
+
+  ("q" nil "quit" :color red))
 
 (hkk/leader-key
   ;; org roam

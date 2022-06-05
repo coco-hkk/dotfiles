@@ -93,51 +93,5 @@ Time-stamp: <>
   :after org-roam
   :straight (org-transclusion :type git :host github :repo "nobiot/org-transclusion"))
 
-(defhydra hydra-org-roam (:color pink
-                                 :exit t
-                                 :hint nil)
-  "
-^Dailies^        ^Capture^       ^Jump^
-^^^^^^^^-------------------------------------------------
-_t_: today       _T_: today       _m_: current month
-_r_: tomorrow    _R_: tomorrow    _e_: current year
-_y_: yesterday   _Y_: yesterday   ^ ^
-_d_: date        ^ ^              ^ ^
-
-^Others^
-^^^^^^^^-------------------------------------------------
-_i_: node insert       _I_: insert immediate
-_l_: buffer toggle     _f_: node find
-_c_: capture           _g_: graph
-_u_: UI open           _U_: UI mode
-
-_a_: completion
-"
-  ("t" org-roam-dailies-goto-today)
-  ("r" org-roam-dailies-goto-tomorrow)
-  ("y" org-roam-dailies-goto-yesterday)
-  ("d" org-roam-dailies-goto-date)
-  ("T" org-roam-dailies-capture-today)
-  ("R" org-roam-dailies-capture-tomorrow)
-  ("Y" org-roam-dailies-capture-yesterday)
-  ("m" dw/org-roam-goto-month)
-  ("e" dw/org-roam-goto-year)
-
-  ("i" org-roam-node-insert)
-  ("I" org-roam-insert-immediate)
-  ("l" org-roam-buffer-toggle)
-  ("f" org-roam-node-find)
-  ("c" org-roam-capture)
-  ("g" org-roam-graph)
-
-  ("u" org-roam-ui-open)
-  ("U" org-roam-ui-mode)
-
-  ("a" completion-at-point))
-
-(hkk/leader-key
-  ;; org roam
-  "r" '(hydra-org-roam/body :which-key "org roam"))
-
 (provide 'init-org-roam)
 ;;; init-org-roam.el ends here

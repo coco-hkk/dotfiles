@@ -51,5 +51,22 @@
   (setq show-paren-when-point-inside-paren t
         show-paren-when-point-in-periphery t))
 
+;;; ERC
+(use-package erc
+  :ensure nil
+  :defines erc-autojoin-channels-alist
+  :init (setq erc-rename-buffers t
+              erc-interpret-mirc-color t
+              erc-lurker-hide-list '("JOIN" "PART" "QUIT")
+              erc-autojoin-channels-alist '(("freenode.net" "#emacs"))))
+
+;; Process
+(use-package proced
+  :ensure nil
+  :init
+  (setq-default proced-format 'verbose)
+  (setq proced-auto-update-flag t
+        proced-auto-update-interval 3))
+
 (provide 'init-builtin)
 ;;; init-builtin.el ends here

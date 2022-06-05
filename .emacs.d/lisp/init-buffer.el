@@ -8,8 +8,8 @@
   (savehist-mode 1))
 
 (use-package ivy
-  :init
-  (ivy-mode 1)
+  :hook
+  (after-init . ivy-mode)
   :bind (
          ("C-s" . swiper-isearch)
          ("M-x" . counsel-M-x)
@@ -29,8 +29,6 @@
          ("C-k" . ivy-previous-line)
          ("C-d" . ivy-reverse-i-search-kill))
   :config
-  (setq ivy-use-virtual-buffers t)
-  (setq enable-recursive-minibuffers t)
   (setq ivy-initial-inputs-alist nil)) ;; Don't start searches with ^
 
 (use-package ivy-rich

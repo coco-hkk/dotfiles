@@ -5,9 +5,6 @@
 (use-package treemacs
   :ensure t
   :defer t
-  :init
-  (with-eval-after-load 'winum
-    (define-key winum-keymap (kbd "M-0") #'treemacs-select-window))
   :bind
   (:map global-map
         ("M-0" . treemacs-select-window))
@@ -17,7 +14,7 @@
           treemacs-deferred-git-apply-delay        0.2
           treemacs-directory-name-transformer      #'identity
           treemacs-display-in-side-window          t
-          treemacs-eldoc-display                   'simple
+          treemacs-eldoc-display                   'detailed
           treemacs-file-event-delay                300
           treemacs-file-extension-regex            treemacs-last-period-regex-value
           treemacs-file-follow-delay               0.2
@@ -29,8 +26,12 @@
           treemacs-goto-tag-strategy               'refetch-index
           treemacs-header-scroll-indicators        '(nil . "^^^^^^")
           treemacs-hide-dot-git-directory          t
-          treemacs-indentation                     2
-          treemacs-indentation-string              " "
+
+          treemacs-indent-guide-mode               t
+          ;;treemacs-indentation                     2
+          ;;treemacs-indentation-string              " "
+          ;;treemacs-indent-guide-style              'block
+
           treemacs-is-never-other-window           nil
           treemacs-max-git-entries                 300
           treemacs-missing-project-action          'ask
@@ -41,37 +42,41 @@
           treemacs-persist-file                    (expand-file-name ".cache/treemacs-persist" user-emacs-directory)
           treemacs-position                        'left
           treemacs-read-string-input               'from-child-frame
+
           treemacs-recenter-distance               0.1
           treemacs-recenter-after-file-follow      nil
           treemacs-recenter-after-tag-follow       nil
           treemacs-recenter-after-project-jump     'always
           treemacs-recenter-after-project-expand   'on-distance
-          treemacs-litter-directories              '("/node_modules" "/.venv" "/.cask")
-          treemacs-show-cursor                     nil
+
+          treemacs-show-cursor                     t
           treemacs-show-hidden-files               t
-          treemacs-silent-filewatch                nil
-          treemacs-silent-refresh                  nil
+
+          treemacs-silent-filewatch                t
+          treemacs-silent-refresh                  t
+
+          treemacs-text-scale                      nil
           treemacs-sorting                         'alphabetic-asc
+
           treemacs-select-when-already-in-treemacs 'move-back
           treemacs-space-between-root-nodes        t
+
           treemacs-tag-follow-cleanup              t
           treemacs-tag-follow-delay                1.5
-          treemacs-text-scale                      nil
-          treemacs-user-mode-line-format           nil
-          treemacs-user-header-line-format         nil
-          treemacs-wide-toggle-width               70
-          treemacs-width                           35
+
+          treemacs-user-mode-line-format           t
+          treemacs-user-header-line-format         t
+
+          treemacs-wide-toggle-width               30
+          treemacs-width                           30
           treemacs-width-increment                 1
           treemacs-width-is-initially-locked       t
-          treemacs-workspace-switch-cleanup        nil)
 
-    ;; The default width and height of the icons is 22 pixels. If you are
-    ;; using a Hi-DPI display, uncomment this to double the icon size.
-    ;;(treemacs-resize-icons 44)
+          treemacs-workspace-switch-cleanup        t)
 
     (treemacs-follow-mode t)
     (treemacs-filewatch-mode t)
-    (treemacs-fringe-indicator-mode 'always)
+    (treemacs-fringe-indicator-mode 'only-when-focused)
 
     (pcase (cons (not (null (executable-find "git")))
                  (not (null treemacs-python-executable)))
@@ -80,7 +85,7 @@
       (`(t . _)
        (treemacs-git-mode 'simple)))
 
-    (treemacs-hide-gitignored-files-mode nil)))
+    (treemacs-hide-gitignored-files-mode t)))
 
 (use-package treemacs-evil
   :after (treemacs evil)
@@ -108,22 +113,21 @@
   :ensure t
   :config (treemacs-set-scope-type 'Tabs))
 
-(defhydra hydra-treemacs (:color pink
-                                 :exit t
-                                 :hint nil)
+(defhydra hydra-treemacs (
+                          :color pink
+                          :exit t
+                          :hint nil)
   "
-                           ^treemacs
-^^^^^^^---------------------------------------------------------------
-_d_: delete other windows    _t_: treemacs      _s_: select directory
-_b_: treemacs bookmark       _f_: find file     _T_: find tag
+             ^treemacs^
+--------------------------------------------
+_t_: treemacs          _s_: select directory
+
 "
 
-  ("d" treemacs-delete-other-windows)
   ("t" treemacs)
   ("s" treemacs-select-directory)
-  ("b" treemacs-bookmark)
-  ("f" treemacs-find-file)
-  ("T" treemacs-find-tag))
+
+  ("q" nil "quit" :color red))
 
 (hkk/leader-key
   ;; hydra keybindings

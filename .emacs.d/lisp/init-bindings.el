@@ -29,34 +29,42 @@
                                 :exit t
                                 :hint nil)
   "
-^Media^             ^File^           ^Fanyi^          ^Others
-^^^^^^^-----------------------------------------------------------------
-_a_: 播放列表    _f_: init.el      _D_: dwim         _s_: toggle eshell
-_t_: 媒体库      _d_: lisp         _E_: dwim2        _w_: whitespace
-_h_: 上一首      _e_: .eamcs.d     _F_: history      _T_: themes
-_l_: 下一首      ^ ^               _g_: copy&query
-_x_: 列表重播
-_y_: 列表随机
+   ^Emms^             ^Jampal^                ^File^           ^Fanyi^            ^Others^
+---------------------------------------------------------------------------------------------------
+_el_: 播放列表    _je_: change engines    _ff_: init.el     _yd_: dwim          _s_: toggle eshell
+_ed_: 媒体库      _jr_: read buffer       _fl_: lisp        _ye_: dwim2         _w_: whitespace
+_ej_: 上一首      _js_: stop              _fe_: .eamcs.d    _yh_: history       _t_: themes
+_ek_: 下一首      _jt_: read this            ^ ^            _yq_: copy&query
+_er_: 列表重播
+_es_: 列表随机
+
 "
-  ("a" emms-playlist-mode-switch-buffer)
-  ("t" emms-add-directory-tree)
-  ("h" emms-previous)
-  ("l" emms-next)
-  ("x" emms-toggle-repeat-playlist)
-  ("y" emms-toggle-random-playlist)
+  ("el" emms-playlist-mode-switch-buffer)
+  ("ed" emms-add-directory-tree)
+  ("ej" emms-previous)
+  ("ek" emms-next)
+  ("er" emms-toggle-repeat-playlist)
+  ("es" emms-toggle-random-playlist)
 
-  ("f" (lambda () (interactive) (find-file (expand-file-name "~/.emacs.d/init.el"))))
-  ("d" (lambda () (interactive) (dired (expand-file-name "~/.emacs.d/lisp/"))))
-  ("e" (lambda () (interactive) (dired (expand-file-name "~/.emacs.d/"))))
+  ("je" read-aloud-change-engine)
+  ("jr" read-aloud-buf)
+  ("jt" read-aloud-this)
+  ("js" read-aloud-stop)
 
-  ("D" fanyi-dwim)
-  ("E" fanyi-dwim2)
-  ("F" fanyi-from-history)
-  ("g" fanyi-copy-query-word)
+  ("ff" (lambda () (interactive) (find-file (expand-file-name "~/.emacs.d/init.el"))))
+  ("fl" (lambda () (interactive) (dired (expand-file-name "~/.emacs.d/lisp/"))))
+  ("fe" (lambda () (interactive) (dired (expand-file-name "~/.emacs.d/"))))
+
+  ("yd" fanyi-dwim)
+  ("ye" fanyi-dwim2)
+  ("yh" fanyi-from-history)
+  ("yq" fanyi-copy-query-word)
 
   ("s" eshell-toggle)
   ("w" whitespace-mode)
-  ("T" counsel-load-theme))
+  ("t" counsel-load-theme)
+
+  ("q" nil "quit" :color pink))
 
 (hkk/leader-key
   ;; hydra keybindings
