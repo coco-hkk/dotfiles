@@ -22,6 +22,8 @@
     (load bootstrap-file nil 'nomessage)))
 
 (setq straight-use-package-by-default t)
+(setq straight-vc-git-default-clone-depth 1)
+(setq straight-check-for-modifications '(watch-files find-when-checking))
 
 ;; Use straight.el for use-package expressions
 (straight-use-package 'use-package)

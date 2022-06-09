@@ -44,6 +44,7 @@
   :hook (org-mode . toc-org-mode))
 
 (use-package org
+  :straight (:type built-in)
   :config
   (hkk/org-mode-setup)
   (hkk/org-font-setup)

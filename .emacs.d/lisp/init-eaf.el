@@ -11,11 +11,9 @@
 (setq eaf-enable-debug t)
 
 (require 'eaf-browser)
-;;(setq eaf-proxy-type "socks5")
-;;(setq eaf-proxy-host "127.0.0.1")
-;;(setq eaf-proxy-port "10800")
-(setq browse-url-browser-function 'eaf-open-browser)
-(defalias 'browse-web #'eaf-open-browser)
+(setq eaf-proxy-type "socks5")
+(setq eaf-proxy-host "127.0.0.1")
+(setq eaf-proxy-port "10800")
 
 (require 'eaf-image-viewer)
 (require 'eaf-music-player)
@@ -42,9 +40,9 @@
                      :exit t
                      :hint nil)
   "
-^browse^        ^mindmap^       ^File Manager^
-^^^^^^^^-------------------------------------------------
-_b_: browse     _m_: create
+^browse^        ^mindmap^       ^File Manager^      ^open^
+^^^^^^^^-------------------------------------------------------
+_b_: browse     _m_: create     _f_: manager      _o_: open
 _B_: history    _M_: open
   ^ ^             ^ ^
   ^ ^             ^ ^              ^ ^
@@ -54,6 +52,10 @@ _B_: history    _M_: open
 
   ("m" eaf-create-mindmap)
   ("M" eaf-open-mindmap)
+
+  ("f" eaf-open-file-manager)
+
+  ("o" eaf-open)
 
   ("q" nil "quit" :color red))
 

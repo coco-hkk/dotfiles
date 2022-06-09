@@ -17,27 +17,20 @@
   :custom
   (doom-themes-enable-bold t)
   (doom-themes-enable-italic t)
-  (doom-themes-padded-modeline t)
   :config
   (load-theme 'doom-dracula t)
   (doom-themes-visual-bell-config)
-  ;;(doom-themes-treemacs-config)
-  ;;(setq doom-themes-treemacs-theme "doom-atom")
   (doom-themes-org-config))
 
 ;;; 状态栏配置
 (use-package doom-modeline
-  :hook (after-init . doom-modeline-mode)
-  :custom-face
-  (doom-modeline ((t (:family "Segoe Print" :height 0.9))))
-  (doom-modeline-inactive ((t (:family "Segoe Print" :height 0.9))))
-  (doom-modeline-battery-full ((t (:inherit success :weight extra-bold))))
+  :ensure t
+  :init (doom-modeline-mode 1)
   :custom
   (doom-modeline-enable-word-count t)
   (doom-modeline-minor-modes t)
   (doom-modeline-hud t)
   (doom-modeline-indent-info t)
-  (auto-revert-check-vc-info t)
   (doom-modeline-buffer-file-name-style 'file-name)
   (doom-modeline-project-detection 'projectile))
 
@@ -45,13 +38,13 @@
 (use-package centaur-tabs
   :demand
   :hook
-  (dashboard-mode . centaur-tabs-local-mode)
-  (dired-mode . centaur-tabs-local-mode)
-  (term-mode . centaur-tabs-local-mode)
-  (calendar-mode . centaur-tabs-local-mode)
-  (org-agenda-mode . centaur-tabs-local-mode)
-  (helpful-mode . centaur-tabs-local-mode)
-  (dap-mode . centaur-tabs-local-mode)
+  ((dashboard-mode
+    dired-mode
+    term-mode
+    calendar-mode
+    org-agenda-mode
+    helpful-mode
+    dap-mode) . centaur-tabs-local-mode)
   :bind
   ("C-<prior>" . centaur-tabs-backward)
   ("C-<next>" . centaur-tabs-forward)

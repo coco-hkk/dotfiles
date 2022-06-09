@@ -4,17 +4,17 @@
 
 ;;; 记录上次关闭文件时 cursor 停留位置
 (use-package saveplace
-  :ensure nil
+  :straight (:type built-in)
   :hook (after-init . save-place-mode))
 
 ;;; 高亮当前行
 (use-package hl-line
-  :ensure nil
+  :straight (:type built-in)
   :hook (after-init . global-hl-line-mode))
 
 ;;; 隐藏、显示结构化数据，如 {} 内容，注释内容
 (use-package hideshow
-  :ensure nil
+  :straight (:type built-in)
   :diminish hs-minor-mode
   :hook (prog-mode . hs-minor-mode)
   :custom
@@ -26,12 +26,12 @@
 
 ;;; 处理文件中特别长的行，防止界面卡死
 (use-package so-long
-  :ensure nil
+  :straight (:type built-in)
   :config (global-so-long-mode 1))
 
 ;;; Emacs 打开的文件若在硬盘中被修改，需要自动更新 buffer
 (use-package autorevert
-  :ensure nil
+  :straight (:type built-in)
   :hook
   (after-init . global-auto-revert-mode)
   :custom
@@ -39,12 +39,12 @@
 
 ;;; 选中文本后，直接输入就可以，省去了删除操作
 (use-package delsel
-  :ensure nil
+  :straight (:type built-in)
   :hook (after-init . delete-selection-mode))
 
 ;;; parenthesis 高亮显示配对的( ) [ ] { } 括号
 (use-package paren
-  :ensure nil
+  :straight (:type built-in)
   :hook (after-init . show-paren-mode)
   :config
   (set-face-attribute 'show-paren-match-expression nil :background "#363e4a")
@@ -53,7 +53,7 @@
 
 ;;; ERC
 (use-package erc
-  :ensure nil
+  :straight (:type built-in)
   :defines erc-autojoin-channels-alist
   :init (setq erc-rename-buffers t
               erc-interpret-mirc-color t
@@ -62,7 +62,7 @@
 
 ;; Process
 (use-package proced
-  :ensure nil
+  :straight (:type built-in)
   :init
   (setq-default proced-format 'verbose)
   (setq proced-auto-update-flag t
