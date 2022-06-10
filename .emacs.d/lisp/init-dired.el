@@ -2,12 +2,9 @@
 ;;; Commentary:
 ;;; Code:
 
-(use-package all-the-icons-dired
-	:hook (dired-mode . all-the-icons-dired-mode))
-
 ;; Use ( to toggle dired-hide-details-mode
 (use-package dired
-  :straight nil
+  :straight (:type built-in)
   :commands (dired dired-jump)
   :custom
   (dired-dwim-target t)
@@ -35,18 +32,15 @@
   :hook (dired-mode . diredfl-mode))
 
 ;; Show subtree in dired
-(use-package dired-subtree
+(use-package dired-hacks-utils
+  :straight (dired-hacks-utils :files ("*.el"))
   :after dired
-  :custom
-  (dired-subtree-use-backgrounds nil))
+  :config
+  (require 'dired-subtree)
+  (require 'dired-collapse)
+  (require 'dired-ranger))
 
 (use-package dired-single
-  :defer t)
-
-(use-package dired-ranger
-  :defer t)
-
-(use-package dired-collapse
   :defer t)
 
 (evil-collection-define-key 'normal 'dired-mode-map

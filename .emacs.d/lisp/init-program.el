@@ -26,9 +26,12 @@
 (use-package flycheck
   :hook (prog-mode . flycheck-mode))
 
+(use-package with-venv)
+
 (use-package dap-mode
   :commands dap-debug
-  :hook ((python-mode . dap-mode)
+  :hook ((python-mode . dap-ui-mode)
+         (python-mode . dap-mode)
          (c-mode . dap-mode))
   :config
   (dap-mode 1)
@@ -43,6 +46,8 @@
 
   (require 'dap-python)
   (setq dap-python-debugger 'debugpy)
+  (defun dap-python--pyenv-executable-find (command)
+    (with-venv (executable-find "python")))
 
   (require 'dap-lldb)
   (require 'dap-gdb-lldb)

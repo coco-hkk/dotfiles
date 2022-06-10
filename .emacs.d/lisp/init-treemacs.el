@@ -24,7 +24,6 @@
           treemacs-find-workspace-method           'find-for-file-or-pick-first
           treemacs-git-command-pipe                ""
           treemacs-goto-tag-strategy               'refetch-index
-          treemacs-header-scroll-indicators        '(nil . "^^^^^^")
           treemacs-hide-dot-git-directory          t
 
           treemacs-indent-guide-mode               t
@@ -49,7 +48,7 @@
           treemacs-recenter-after-project-jump     'always
           treemacs-recenter-after-project-expand   'on-distance
 
-          treemacs-show-cursor                     t
+          treemacs-show-cursor                     nil
           treemacs-show-hidden-files               t
 
           treemacs-silent-filewatch                t
@@ -64,15 +63,17 @@
           treemacs-tag-follow-cleanup              t
           treemacs-tag-follow-delay                1.5
 
-          treemacs-user-mode-line-format           t
-          treemacs-user-header-line-format         t
+          treemacs-user-mode-line-format           nil
+          treemacs-user-header-line-format         nil
 
           treemacs-wide-toggle-width               30
           treemacs-width                           30
           treemacs-width-increment                 1
           treemacs-width-is-initially-locked       t
 
-          treemacs-workspace-switch-cleanup        t)
+          treemacs-workspace-switch-cleanup        t
+
+          treemacs-python-executable "d:/Python310/python.exe")
 
     (treemacs-follow-mode t)
     (treemacs-filewatch-mode t)
@@ -88,30 +89,20 @@
     (treemacs-hide-gitignored-files-mode t)))
 
 (use-package treemacs-evil
-  :after (treemacs evil)
-  :ensure t)
+  :after treemacs evil)
 
 (use-package treemacs-projectile
-  :after (treemacs projectile)
-  :ensure t)
+  :after treemacs projectile)
 
 (use-package treemacs-icons-dired
-  :hook (dired-mode . treemacs-icons-dired-enable-once)
-  :ensure t)
+  :hook (dired-mode . treemacs-icons-dired-mode))
 
 (use-package treemacs-magit
-  :after (treemacs magit)
-  :ensure t)
+  :after treemacs magit)
 
-(use-package treemacs-persp ;;treemacs-perspective if you use perspective.el vs. persp-mode
-  :after (treemacs persp-mode) ;;or perspective vs. persp-mode
-  :ensure t
+(use-package treemacs-persp
+  :after treemacs persp-mode
   :config (treemacs-set-scope-type 'Perspectives))
-
-(use-package treemacs-tab-bar ;;treemacs-tab-bar if you use tab-bar-mode
-  :after (treemacs)
-  :ensure t
-  :config (treemacs-set-scope-type 'Tabs))
 
 (defhydra hydra-treemacs (
                           :color pink
@@ -121,17 +112,22 @@
              ^treemacs^
 --------------------------------------------
 _t_: treemacs          _s_: select directory
+_n_: next workspace    _S_: switch workspace
+_e_: edit workspace
 
 "
 
   ("t" treemacs)
   ("s" treemacs-select-directory)
+  ("n" treemacs-next-workspace)
+  ("S" treemacs-switch-workspace)
+  ("e" treemacs-edit-workspace)
 
   ("q" nil "quit" :color red))
 
 (hkk/leader-key
   ;; hydra keybindings
-  "b" '(hydra-treemacs/body :which-key "treemacs"))
+  "t" '(hydra-treemacs/body :which-key "treemacs"))
 
 (provide 'init-treemacs)
 ;;; init-treemacs.el ends here
