@@ -1,0 +1,19 @@
+snippet head "hexo blog post header" b
+---
+title: ${1:title}
+date: `!v strftime("%Y/%m/%d %H:%M:%S")`
+top: false
+cover: false
+password:
+toc: true
+mathjax: false
+summary:
+categories:
+    - ${2:categories}
+tags:
+    - ${3:tags}
+---
+
+${0}
+endsnippet
+# vim:ft=snippets:

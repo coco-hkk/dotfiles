@@ -1,0 +1,566 @@
+" vimrc vim&nvim config file
+"
+" Require: nodejs,yarn,python3
+
+set nocompatible
+syntax enable
+syntax on
+
+" plug install {{{
+
+filetype off                  " required
+
+" vim-plug 在 windows 中，仅对用户配置，则把 plug.vim 文件放在
+" ~/vimfiles/autoload/ 中。若对全局配置，则把 plug.vim 放在 vim 安装位置的
+" autoload 目录中。类 Unix系统，若仅对用户配置，则把 plug.vim 放在
+" ~/.vim/autoload中。对全局配置同 windows。
+
+call plug#begin('d:/vim/plugged')
+
+" 启动页面
+Plug 'glepnir/dashboard-nvim'
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'
+
+" 主题
+Plug 'flazz/vim-colorschemes'
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
+
+" tpope
+Plug 'tpope/vim-sensible'
+Plug 'tpope/vim-surround'
+Plug 'tpope/vim-repeat'
+Plug 'tpope/vim-commentary'
+Plug 'tpope/vim-speeddating'
+
+" 中文帮助文档
+Plug 'yianwillis/vimcdoc'
+
+Plug 'liuchengxu/vim-which-key'
+Plug 'sjl/gundo.vim'
+Plug 'vadskye/vim-emotions'
+Plug 'junegunn/vim-easy-align'
+Plug 'jiangmiao/auto-pairs'
+Plug 'machakann/vim-highlightedyank'
+
+Plug 'terryma/vim-multiple-cursors'
+
+" 书签
+Plug 'kshenoy/vim-signature'
+
+Plug 'bronson/vim-trailing-whitespace'
+
+Plug 'scrooloose/nerdtree'
+Plug 'Xuyuanp/nerdtree-git-plugin'
+
+Plug 'w0rp/ale'
+
+Plug 'SirVer/ultisnips'
+Plug 'honza/vim-snippets'
+
+Plug 'jceb/vim-orgmode'
+
+Plug 'vim-scripts/DrawIt'
+
+" markdown 及 preview，先安装 tabular
+Plug 'godlygeek/tabular'
+Plug 'plasticboy/vim-markdown'
+Plug 'mzlogin/vim-markdown-toc'
+Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install'  }
+Plug 'hotoo/pangu.vim'
+
+" 状态栏
+Plug 'glepnir/spaceline.vim'
+Plug 'ryanoasis/vim-devicons'
+
+call plug#end()
+
+set timeoutlen=500
+filetype plugin indent on    " required
+
+" }}}
+
+" basic config {{{
+
+" 编码及乱码 {{{
+
+"解决菜单乱码
+source $VIMRUNTIME/delmenu.vim
+source $VIMRUNTIME/menu.vim
+
+"文件编码设置
+set encoding=utf-8
+set termencoding=utf-8
+set fileencoding=utf-8
+set fileencodings=utf-8,ucs-bom,shift-jis,gb18030,gbk,gb2312,cp936
+
+"语言设置
+set langmenu=zh_CN.UTF-8
+
+"中文帮助
+set helplang=cn
+
+"解决 consle vim 提示信息输出乱码
+language messages zh_CN.utf-8
+
+let &t_TI = ""      "解决终端总是出现>4;2m问题
+let &t_TE = ""
+
+" }}}
+
+" 图形界面显示 {{{
+
+if has("gui_running")
+    "禁止显示滚动条
+    set guioptions-=l
+    set guioptions-=L
+    set guioptions-=r
+    set guioptions-=R
+    set guioptions-=b
+
+    "隐藏工具栏
+    set guioptions-=T
+
+    "隐藏菜单栏
+    set guioptions-=m
+endif
+
+" }}}
+
+" 文件加载及备份 {{{
+
+"当文件被改动时自动载入
+set autoread
+
+"自动保存
+set autowrite
+
+"从不备份
+set nobackup
+
+"取消swap文件
+set noswapfile
+
+" }}}
+
+" 折叠 {{{
+
+" 可折叠则用+，不可折叠用-，1 表示只用1列表示折叠
+set foldcolumn=1
+
+" 折叠方法 indent, marker
+set foldmethod=marker
+
+set foldlevel=3
+
+"折叠使能
+set foldenable
+
+" }}}
+
+" 缩进 {{{
+
+"自动缩进
+set autoindent
+
+set cindent
+
+" }}}
+
+" TAB 和 空格 {{{
+
+"1 tab = 4 spaces
+set tabstop=4
+
+set softtabstop=4
+
+set shiftwidth=4
+
+"不要用空格代替制表符
+set expandtab
+
+" }}}
+
+" 搜索 {{{
+
+"搜索忽略大小写
+set ignorecase
+
+"高亮搜索
+set hlsearch
+
+" 增益搜索
+set incsearch
+
+" }}}
+
+" 高亮行列、80列，自动换行 {{{
+
+"高亮显示当前行/列
+set cursorline
+
+set cursorcolumn
+
+"高亮显示80列
+set colorcolumn=80
+
+"80列自动换行
+set textwidth=80
+
+"fo = formatoptions，针对中文不能自动换行时开启
+set fo+=Mm
+
+" }}}
+
+" 输入法 {{{
+
+" GUI 离开 Insert 模式时切换到英文输入法
+set noimdisable
+
+" 关闭自动切换 IME 输入法
+if has('multi_byte_ime')
+    "未开启IME时光标背景色
+    hi Cursor guifg=bg guibg=Orange gui=NONE
+
+    "开启IME时光标背景色
+    hi CursorIM guifg=NONE guibg=Skyblue gui=NONE
+
+    " 关闭Vim的自动切换IME输入法(插入模式和检索模式)
+    set iminsert=0 imsearch=0
+
+    " 插入模式输入法状态未被记录时，默认关闭IME
+    " inoremap <silent> <ESC> <ESC>:set iminsert=0<CR>
+endif
+
+" }}}
+
+" guifont {{{
+" 先设置 encoding=utf-8
+
+if has("gui_gtk2")
+    set guifont=DejaVa\ Sans\ Mono\ 10          "设置字体 ubuntu风格
+    " set guifontwide=WenQuanYi\ Zen\ Hei\ 10     "设置中文字体
+elseif has("gui_win32")
+    set guifont=DaddyTimeMono_Nerd_Font_Mono:h11:cANSI:qDRAFT
+endif
+
+" }}}
+
+" 其它 {{{
+
+"与Windows共享剪贴板
+set clipboard+=unnamed
+
+"历史
+set history=100
+
+"去掉蜂鸣
+set belloff=all
+
+"在处理未保存或只读文件的时候，弹出确认
+set confirm
+
+"打开状态栏标尺
+set ruler
+
+"设置魔术
+set magic
+
+"禁止光标闪烁
+set gcr=a:block-blinkon0
+
+" 设置为双字宽显示，否则无法完整显示如:☆
+set ambiwidth=double
+
+"高亮显示匹配的括号
+set showmatch
+
+" 显示命令
+set showcmd
+
+"总是显示状态行
+set laststatus=2
+
+"命令行（在状态行下）的高度，默认为1
+set cmdheight=1
+
+"自动换行
+set wrap
+
+"整词换行，与自动换行搭配使用
+set linebreak
+
+"显示行号
+set number
+
+"自动设置当前目录为正在编辑的目录
+set autochdir
+
+"退格键不能用问题
+set backspace=indent,eol,start
+
+"命令行模式智能补全
+set wildmenu
+
+" 设置gvim启动时窗口行列数
+if has("gui_running")
+    set lines=24
+    set columns=90
+endif
+
+" 不在宏执行时重绘屏幕（更好的性能）
+set lazyredraw
+
+set ttyfast
+
+" :W sudo saves the file
+command! W execute 'w !sudo tee % > /dev/null' <bar> edit!
+
+" 状态栏显示
+set statusline=%F%m%r%h%w\ [%{&ff}\|%Y]\ [%04l,%04v\|%p%%*%L]
+
+"}}}
+
+" }}}
+
+" map {{{
+
+let g:maplocalleader = ','
+let g:mapleader="\<Space>"
+
+nnoremap <silent> g; g;zz
+nnoremap <silent> g, g,zz
+
+"}}}
+
+" fzf {{{
+
+" 在当前目录搜索文件
+nnoremap <silent> <leader>f :Files<CR>
+
+"切换Buffer中的文件
+nnoremap <silent> <leader>b :Buffers<CR>
+
+"在当前所有加载的Buffer中搜索包含目标词的所有行，:BLines只在当前Buffer中搜索
+nnoremap <silent> <leader>p :Lines<CR>
+
+"在Vim打开的历史文件中搜索，相当于是在MRU中搜索，:History：命令历史查找
+nnoremap <silent> <leader>h :History<CR>
+
+"调用Rg进行搜索，包含隐藏文件
+command! -bang -nargs=* Rg
+  \ call fzf#vim#grep(
+  \   'rg --column --line-number --no-heading --color=always --smart-case --hidden '.shellescape(<q-args>), 1,
+  \   <bang>0 ? fzf#vim#with_preview('up:60%')
+  \           : fzf#vim#with_preview('right:50%:hidden', '?'),
+  \   <bang>0)
+
+" }}}
+
+" theme {{{
+
+" airline
+" 使能 powerline 字体，安装地址： https://github.com/powerline/fonts。
+let g:airline_powerline_fonts = 1
+
+let g:airline#extensions#tabline#enabled = 1
+let g:airline#extensions#tabline#buffer_nr_show = 1
+
+" vim-airline-themes
+let g:airline_theme="solarized"
+
+" vim-colorscheme
+set background=light
+colorscheme solarized
+
+" }}}
+
+" markdown {{{
+
+" vim-markdown
+let g:vim_markdown_math = 1
+
+" markdown-preview
+" :MarkdownPreview
+" :MarkdownPreviewStop
+let g:mkdp_refresh_slow = 1
+
+" vim-markdown-toc
+" 在当前光标后生成目录
+" :GenTocMarked
+" 更新目录
+" :UpdateToc
+
+" 取消存储时自动更新目录
+let g:vmt_auto_update_on_save = 0
+
+" pangu.vim
+" autocmd BufWritePre *.markdown,*.md,*.text,*.txt,*.wiki,*.cnx call PanGuSpacing()
+
+"}}}
+
+" spaceline {{{
+" 需要插件 vim-devicons，插件 vim-devicons 需要先安装相应的字体，设置 guifont。
+" 字体地址 https://www.nerdfonts.com/
+
+let g:spaceline_colorscheme = 'space'
+let g:spaceline_seperate_style = 'curve'
+let g:spaceline_diagnostic_tool = 'ale'
+
+"}}}
+
+" nerdtree {{{
+
+nmap <F2> :NERDTreeToggle<CR>      "使用 NERDTree 插件查看工程文件。
+
+let NERDTreeWinSize=22                  "设置 NERDTree 子窗口宽度
+let NERDTreeWinPos="left"               "设置 NERDTree 子窗口位置
+let NERDTreeShowHidden=1                "显示隐藏文件
+let NERDTreeMinimalUI=1                 "NERDTree 子窗口中不显示冗余帮助信息
+let NERDTreeAutoDeleteBuffer=1          "删除文件时自动删除文件对应 buffer
+
+let NERDTreeMapOpenExpl = ""
+let NERDTreeMapUpdir = ""
+let NERDTreeMapUpdirKeepOpen = "l"
+let NERDTreeMapOpenSplit = ""
+let NERDTreeOpenVSplit = ""
+let NERDTreeMapActivateNode = "i"
+let NERDTreeMapOpenInTab = "o"
+let NERDTreeMapPreview = ""
+let NERDTreeMapCloseDir = "n"
+let NERDTreeMapChangeRoot = "y"
+
+" }}}
+
+" nerdtree git {{{
+
+let g:NERDTreeGitStatusIndicatorMapCustom = {
+    \ "Modified"  : "✹",
+    \ "Staged"    : "✚",
+    \ "Untracked" : "✭",
+    \ "Renamed"   : "➜",
+    \ "Unmerged"  : "═",
+    \ "Deleted"   : "✖",
+    \ "Dirty"     : "✗",
+    \ "Clean"     : "✔︎",
+    \ "Unknown"   : "?"
+    \ }
+
+"}}}
+
+" ale 语法检查{{{
+
+"let g:ale_sign_column_always = 1           "始终开启标识列
+
+let g:ale_set_highlights = 0
+
+let g:ale_echo_msg_error_str = 'E'          "显示Linter名称,出错或警告等相关信息
+let g:ale_echo_msg_warning_str = 'W'
+let g:ale_echo_msg_format = '[%linter%] %s [%severity%]'
+
+nmap sp <Plug>(ale_previous_wrap)           "普通模式下，sp前往上一个错误或警告，sn前往下一个错误或警告
+nmap sn <Plug>(ale_next_wrap)
+
+nmap <leader>s :ALEToggle<CR>               "<leader>s触发/关闭语法检查
+nmap <leader>d :ALEDetail<CR>               "<leader>d查看错误或警告的详细信息
+
+"let g:ale_lint_on_text_changed = 'never'   "文件内容发生变化时不进行检查
+"let g:ale_lint_on_enter = 0                "打开文件时不进行检查
+
+let g:ale_linters = {'c': 'clang'}          "对C/C++使用Clang进行语法检查
+let g:ale_linters = {'c++': 'clang++'}
+let g:ale_linters = {'python': ['flake8'], 'reStructuredText': ['rstcheck']}
+let g:ale_fixers = {'python': ['remove_trailing_lines', 'trim_whitespace', 'autopep8']}
+
+"禁用了javascript的eslint
+let g:ale_linters = {
+            \   'javascript': ['eslint'],
+            \}
+
+" }}}
+
+" gundo {{{
+
+nnoremap <leader>u :GundoToggle<CR>
+
+" }}}
+
+" vim-orgmode {{{
+
+let g:org_indent = 1
+
+" }}}
+
+" python {{{
+
+if has('nvim')
+    let g:python3_host_prog='D:\python3'
+else
+    let &pythonthreedll='D:\python3\python39.dll'
+    let &pythonthreehome='D:\python3'
+endif
+
+"}}}
+
+" UtilSnips 片段管理，需要配合python3版本 {{{
+" better key bindings for UltiSnipsExpandTrigger
+
+let g:UltiSnipsSnippetDirectories = [$VIM.'/UltiSnips']
+let g:UltiSnipsExpandTrigger = "<tab>"
+let g:UltiSnipsListSnippets = "<c-tab>"
+let g:UltiSnipsJumpForwardTrigger = "<tab>"
+let g:UltiSnipsJumpBackwardTrigger = "<s-tab>"
+
+" If you want :UltiSnipsEdit to split your window.
+let g:UltiSnipsEditSplit="vertical"
+
+"}}}
+
+" vim easy align {{{
+
+xmap ga <Plug>(EasyAlign)
+nmap ga <Plug>(EasyAlign)
+if !exists('g:easy_align_delimiters')
+    let g:easy_align_delimiters = {}
+endif
+let g:easy_align_delimiters['#'] = { 'pattern': '#', 'ignore_groups': ['String'] }
+
+" }}}
+
+" vim-highlightedyank {{{
+
+let g:highlightedyank_highlight_duration = 1000 " 高亮持续时间为 1000 毫秒
+
+"}}}
+
+" dashboard {{{
+
+let g:dashboard_default_executive ='fzf'
+
+nmap <leader>ss :<C-u>SessionSave<CR>
+nmap <leader>sl :<C-u>SessionLoad<CR>
+
+nnoremap <silent> <leader>fh :DashboardFindHistory<CR>
+nnoremap <silent> <leader>ff :DashboardFindFile<CR>
+nnoremap <silent> <leader>tc :DashboardChangeColorscheme<CR>
+nnoremap <silent> <leader>fa :DashboardFindWord<CR>
+nnoremap <silent> <leader>fb :DashboardJumpMark<CR>
+nnoremap <silent> <leader>cn :DashboardNewFile<CR>
+
+let g:dashboard_custom_shortcut={
+      \ 'last_session'       : 'SPC s l',
+      \ 'find_history'       : 'SPC f h',
+      \ 'find_file'          : 'SPC f f',
+      \ 'new_file'           : 'SPC c n',
+      \ 'change_colorscheme' : 'SPC t c',
+      \ 'find_word'          : 'SPC f a',
+      \ 'book_marks'         : 'SPC f b',
+      \ }
+
+"}}}
+
+" whichkey {{{
+nnoremap <silent> <leader>      :<c-u>WhichKey '<Space>'<CR>
+nnoremap <silent> <localleader> :<c-u>WhichKey  ','<CR>
+"}}}

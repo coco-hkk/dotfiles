@@ -51,3 +51,6 @@
    - magit
    - fanyi
    - read-aloud
+
+2. .vim 配置文件
+   - win10 _vimrc
