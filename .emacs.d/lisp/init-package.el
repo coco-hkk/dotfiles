@@ -23,12 +23,17 @@
 
 (setq straight-use-package-by-default t)
 (setq straight-vc-git-default-clone-depth 1)
-(setq straight-check-for-modifications '(watch-files find-when-checking))
 
 ;; Use straight.el for use-package expressions
 (straight-use-package 'use-package)
 
 ;; Clean up unused repos with `straight-remove-unused-repos'
+
+;;; 启动时间统计
+(use-package benchmark-init
+  :ensure t
+  :config
+  (add-hook 'after-init-hook 'benchmark-init/deactivate))
 
 (provide 'init-package)
 ;;; init-package.el ends here

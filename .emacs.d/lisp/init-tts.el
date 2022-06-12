@@ -3,6 +3,7 @@
 ;;; Code:
 
 (use-package read-aloud
+  :defer t
   :config
   (lax-plist-put read-aloud-engines "jampal"
   '(cmd "cscript"

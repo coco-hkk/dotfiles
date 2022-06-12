@@ -2,9 +2,10 @@
 ;;; Commentary:
 ;;; Code:
 
-(setq default-process-coding-system '(utf-8-unix . chinese-gbk-dos))
-
 (use-package emms
+  :defer t
+  :init
+  (setq default-process-coding-system '(utf-8-unix . chinese-gbk-dos))
   :custom
   ;; 音视频媒体库
   (emms-source-file-default-directory "f:/多媒体")

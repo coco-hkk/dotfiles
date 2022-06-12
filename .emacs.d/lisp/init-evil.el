@@ -3,12 +3,12 @@
 ;;; Code:
 
 (use-package evil
+  :hook (after-init . evil-mode)
   :custom
   (evil-want-integration t)
   (evil-want-keybinding nil)
   (org-export-with-broken-links t)
   :config
-  (evil-mode 1)
   (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
 
   ;; eaf
@@ -16,23 +16,22 @@
   (setq evil-buffer-regexps '(("^\\*Outline:.*" . 'emacs))))
 
 (use-package evil-collection
-  :after (evil general)
+  :after evil
   :config
   (evil-collection-init))
 
 (use-package evil-surround
-  :after (evil)
+  :after evil
   :config
   (global-evil-surround-mode 1))
 
 ;; 注释
 (use-package evil-nerd-commenter
-  :after (evil)
   :bind
   ("M-/" . evilnc-comment-or-uncomment-lines))
 
 (use-package sis
-  :after (evil)
+  :after evil
   :config
   (sis-ism-lazyman-config "1033" "2052" 'im-select)
 

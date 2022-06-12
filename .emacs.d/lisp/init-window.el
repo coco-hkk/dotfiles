@@ -16,7 +16,8 @@
 ;; 内置插件。窗口布局 undo/redo
 ;; 默认快捷键为 C-c 方向键左/右
 (use-package winner
-  :ensure nil
+  :straight (:type built-in)
+  :defer 2
   :config
   (winner-mode))
 

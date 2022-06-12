@@ -4,31 +4,37 @@
 
 (use-package posframe)
 
-(add-to-list 'load-path "d:/emacs/.emacs.d/site-lisp/lsp-bridge/")
-(add-to-list 'load-path "d:/emacs/.emacs.d/site-lisp/lsp-bridge/acm/")
+(use-package lsp-bridge
+  :straight nil
+  :load-path "site-lisp/lsp-bridge"
+  :defer t
+  :hook (prog-mode . lsp-bridge-mode)
+  :config
+  (setq lsp-bridge-completion-candidates t
+        lsp-bridge-enable-signature-help t
+        lsp-bridge-enable-log t))
 
-(require 'lsp-bridge)
-(require 'acm)
-
-(global-lsp-bridge-mode)
-(setq lsp-bridge-completion-candidates t
-      lsp-bridge-enable-signature-help t
-      lsp-bridge-enable-log t)
-
-(setq acm-mode t
-      acm-enable-dabbrev t
-      acm-backend-elisp-min-length 4
-      acm-backend-tempel-candidates-number 4)
-(acm-doc-show)
+(use-package acm
+  :after lsp-bridge
+  :straight nil
+  :load-path "site-lisp/lsp-bridge/acm"
+  :config
+  (acm-doc-show)
+  (setq acm-mode t
+        acm-enable-dabbrev t
+        acm-backend-elisp-min-length 4
+        acm-backend-tempel-candidates-number 4))
 
 ;; 语法检查
 ;; 需要安装语法检查工具，如 pylint 和 eslint
 (use-package flycheck
+  :defer t
   :hook (prog-mode . flycheck-mode))
 
 (use-package with-venv)
 
 (use-package dap-mode
+  :defer t
   :commands dap-debug
   :hook ((python-mode . dap-ui-mode)
          (python-mode . dap-mode)
@@ -60,15 +66,17 @@
   )
 
 (use-package format-all
+  :defer t
   :hook
   (prog-mode . format-all-mode))
 
 ;;; program
-(use-package arduino-mode)
+(use-package arduino-mode
+  :defer t)
 
 (defhydra hydra-lsp-bridge (:color pink
-                                :exit t
-                                :hint nil)
+                                   :exit t
+                                   :hint nil)
   "
                            ^lsp bridge^
 ---------------------------------------------------------------------------

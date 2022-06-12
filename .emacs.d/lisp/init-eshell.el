@@ -3,6 +3,7 @@
 ;;; Code:
 
 (use-package eshell
+  :defer t
   :hook (eshell-first-time-mode . (lambda ()
                                     ;; Save command history when commands are entered
                                     (add-hook 'eshell-pre-command-hook 'eshell-save-some-history)
@@ -23,7 +24,7 @@
   (eshell-git-prompt-use-theme 'robbyrussell))
 
 (use-package eshell-syntax-highlighting
-  :after esh-mode
+  :after eshell
   :config
   (eshell-syntax-highlighting-global-mode +1))
 

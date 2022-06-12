@@ -7,6 +7,7 @@
 (setq org-roam-graph-executable "d:/Graphviz/bin/dot.exe")
 
 (use-package org-roam
+  :defer t
   :custom
   (org-roam-completion-everywhere t)
 
@@ -44,6 +45,7 @@
 
 ;; 查找 org roam
 (use-package deft
+  :after org-roam
   :commands (deft)
   :bind
   ("C-c o d" . deft)

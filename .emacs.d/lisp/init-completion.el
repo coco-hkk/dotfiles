@@ -18,7 +18,7 @@
   )
 
 (use-package all-the-icons-completion
-  :init
+  :config
   (all-the-icons-completion-mode)
   :hook
   (marginalia-mode . all-the-icons-completion-marginalia-setup))
@@ -26,6 +26,7 @@
 ;;; completion, such as company
 (use-package corfu
   :straight '(corfu :files (:defaults "extensions/*"))
+  :hook (after-init . corfu-mode)
   :custom
   ;; 自动补全
   (corfu-auto t)
@@ -39,8 +40,7 @@
               ([tab] . corfu-next)
               ("S-TAB" . corfu-previous)
               ([backtab] . corfu-previous))
-  :init
-  ;;(global-corfu-mode)
+  :config
   (corfu-history-mode t)
   (corfu-indexed-mode))
 
@@ -48,12 +48,13 @@
 (use-package corfu-doc
   :after corfu
   :hook (corfu-mode . corfu-doc-mode)
-  :init
+  :config
   (setq corfu-doc-display-within-parent-frame nil))
 
 ;; Add extensions
 (use-package cape
-  :init
+  :after corfu
+  :config
   (add-to-list 'completion-at-point-functions #'cape-file)
   (add-to-list 'completion-at-point-functions #'cape-dabbrev)
   (add-to-list 'completion-at-point-functions #'cape-keyword))
@@ -143,10 +144,9 @@
 ;;; minibuffer completion
 (use-package vertico
   :straight '(vertico :files (:defaults "extensions/*"))
-  :init
+  :config
   (vertico-mode)
   (setq vertico-count 10)
-  :config
   (vertico-multiform-mode)
   (vertico-indexed-mode))
 
@@ -157,6 +157,7 @@
   (marginalia-mode))
 
 (use-package embark
+  :defer t
   :bind
   (("C-." . embark-act)         ;; pick some comfortable binding
    ("C-;" . embark-dwim)        ;; good alternative: M-.
@@ -167,7 +168,6 @@
 ;; Consult users will also want the embark-consult package.
 (use-package embark-consult
   :after (embark consult)
-  :demand t
   :hook
   (embark-collect-mode . consult-preview-at-point-mode))
 

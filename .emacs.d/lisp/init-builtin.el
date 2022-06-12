@@ -15,7 +15,6 @@
 ;;; 隐藏、显示结构化数据，如 {} 内容，注释内容
 (use-package hideshow
   :straight (:type built-in)
-  :diminish hs-minor-mode
   :hook (prog-mode . hs-minor-mode)
   :custom
   (hs-special-modes-alist
@@ -54,6 +53,7 @@
 ;;; ERC
 (use-package erc
   :straight (:type built-in)
+  :defer t
   :defines erc-autojoin-channels-alist
   :init (setq erc-rename-buffers t
               erc-interpret-mirc-color t
@@ -63,6 +63,7 @@
 ;; Process
 (use-package proced
   :straight (:type built-in)
+  :defer 1
   :init
   (setq-default proced-format 'verbose)
   (setq proced-auto-update-flag t

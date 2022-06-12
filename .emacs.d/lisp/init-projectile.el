@@ -3,6 +3,7 @@
 ;;; Code:
 
 (use-package projectile
+  :defer t
   :config
   (projectile-mode)
   :custom

@@ -2,7 +2,8 @@
 ;;; Commentary:
 ;;; Code:
 
-(use-package magit)
+(use-package magit
+  :defer t)
 
 (provide 'init-magit)
 ;;; init-magit.el ends here

@@ -4,12 +4,13 @@
 
 ;; minibuffer history save
 (use-package savehist
+  :defer 2
   :config
   (savehist-mode 1))
 
 ;; Buffer List manager
 (use-package ibuffer
-  :straight nil
+  :straight (:type built-in)
   :hook ((ibuffer-mode . ibuffer-auto-mode)
          (ibuffer-mode . (lambda ()
                            (ibuffer-switch-to-saved-filter-groups "Default"))))
@@ -47,7 +48,6 @@
       ("Dired" (mode . dired-mode))))))
 
 (use-package all-the-icons-ibuffer
-  :ensure t
   :hook (ibuffer-mode . all-the-icons-ibuffer-mode))
 
 (provide 'init-buffer)

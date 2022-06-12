@@ -3,8 +3,6 @@
 ;;; Code:
 
 (use-package treemacs
-  :ensure t
-  :defer t
   :bind
   (:map global-map
         ("M-0" . treemacs-select-window))

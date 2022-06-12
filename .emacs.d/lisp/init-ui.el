@@ -24,8 +24,7 @@
 
 ;;; 状态栏配置
 (use-package doom-modeline
-  :ensure t
-  :init (doom-modeline-mode 1)
+  :hook (after-init . doom-modeline-mode)
   :custom
   (doom-modeline-enable-word-count t)
   (doom-modeline-minor-modes t)
@@ -36,7 +35,6 @@
 
 ;;; tab 标签配置
 (use-package centaur-tabs
-  :demand
   :hook
   ((dashboard-mode
     dired-mode

@@ -25,10 +25,18 @@
               (interactive)
               (dired-omit-mode 1)
               (dired-hide-details-mode 0)
-              (hl-line-mode 1))))
+              (hl-line-mode 1)))
+  (evil-collection-define-key 'normal 'dired-mode-map
+    "h" 'dired-single-up-directory
+    "H" 'dired-omit-mode
+    "l" 'dired-single-buffer
+    "y" 'dired-ranger-copy
+    "X" 'dired-ranger-move
+    "p" 'dired-ranger-paste))
 
 ;; Make dired colorful
 (use-package diredfl
+  :after dired
   :hook (dired-mode . diredfl-mode))
 
 ;; Show subtree in dired
@@ -41,15 +49,7 @@
   (require 'dired-ranger))
 
 (use-package dired-single
-  :defer t)
-
-(evil-collection-define-key 'normal 'dired-mode-map
-  "h" 'dired-single-up-directory
-  "H" 'dired-omit-mode
-  "l" 'dired-single-buffer
-  "y" 'dired-ranger-copy
-  "X" 'dired-ranger-move
-  "p" 'dired-ranger-paste)
+  :after dired)
 
 (provide 'init-dired)
 ;;; init-dired.el ends here

@@ -51,6 +51,7 @@
    - magit
    - fanyi
    - read-aloud
+   - benchmark
 
 2. .vim 配置文件
    - win10 _vimrc

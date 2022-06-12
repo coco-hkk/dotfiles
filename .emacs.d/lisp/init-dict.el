@@ -3,7 +3,7 @@
 ;;; Code:
 
 (use-package fanyi
-  :ensure t
+  :defer t
   :custom
   (fanyi-sound-player-support-https t)
   (fanyi-providers '(;; 海词

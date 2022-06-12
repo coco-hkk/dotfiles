@@ -2,6 +2,8 @@
 ;;; Commentary:
 ;;; Code:
 
+(setq org-modules-loaded t)
+
 ;; Turn on indentation and auto-fill mode for Org files
 (defun hkk/org-mode-setup ()
   "Org Mode Setup."
@@ -44,6 +46,7 @@
   :hook (org-mode . toc-org-mode))
 
 (use-package org
+  :defer t
   :straight (:type built-in)
   :config
   (hkk/org-mode-setup)

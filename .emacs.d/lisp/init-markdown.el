@@ -3,6 +3,7 @@
 ;;; Code:
 
 (use-package markdown-mode
+  :defer t
   :init
   (setq markdown-command "multimarkdown")
   :hook (markdown-mode . (lambda ()

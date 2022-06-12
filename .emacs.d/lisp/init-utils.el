@@ -4,10 +4,12 @@
 
 ;; 记录键鼠输入指令
 (use-package command-log-mode
+  :defer t
   :commands command-log-mode)
 
 ;; 帮助格式美化
 (use-package helpful
+  :defer t
   :custom
   (counsel-describe-function-function #'helpful-callable)
   (counsel-describe-variable-function #'helpful-variable)
@@ -21,22 +23,24 @@
 
 ;; 自动保存
 (use-package super-save
-  :diminish super-save-mode
+  :hook (after-init . super-save-mode)
   :config
-  (super-save-mode +1)
   (setq super-save-auto-save-when-idle t))
 
 ;; 自动消除尾部空白
 (use-package ws-butler
-  :hook ((text-mode . ws-butler-mode)
-         (prog-mode . ws-butler-mode)))
+  :defer t
+  :hook ((text-mode
+          prog-mode) . ws-butler-mode))
 
 ;; 用不同颜色标记多级括号
 (use-package rainbow-delimiters
+  :defer t
   :hook (prog-mode . rainbow-delimiters-mode))
 
 ;; Keep ~/.emacs.d clean
-(use-package no-littering)
+(use-package no-littering
+  :defer 1)
 
 (provide 'init-utils)
 ;;; init-utils.el ends here
