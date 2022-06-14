@@ -7,7 +7,6 @@
 (use-package lsp-bridge
   :straight nil
   :load-path "site-lisp/lsp-bridge"
-  :defer t
   :hook (prog-mode . lsp-bridge-mode)
   :config
   (setq lsp-bridge-completion-candidates t
@@ -15,9 +14,11 @@
         lsp-bridge-enable-log t))
 
 (use-package acm
-  :after lsp-bridge
   :straight nil
   :load-path "site-lisp/lsp-bridge/acm"
+  :bind (:map acm-mode-map
+              ("C-j" . acm-select-next)
+              ("C-k" . acm-select-prev))
   :config
   (acm-doc-show)
   (setq acm-mode t
@@ -28,13 +29,11 @@
 ;; 语法检查
 ;; 需要安装语法检查工具，如 pylint 和 eslint
 (use-package flycheck
-  :defer t
   :hook (prog-mode . flycheck-mode))
 
 (use-package with-venv)
 
 (use-package dap-mode
-  :defer t
   :commands dap-debug
   :hook ((python-mode . dap-ui-mode)
          (python-mode . dap-mode)
@@ -66,13 +65,8 @@
   )
 
 (use-package format-all
-  :defer t
   :hook
   (prog-mode . format-all-mode))
-
-;;; program
-(use-package arduino-mode
-  :defer t)
 
 (defhydra hydra-lsp-bridge (:color pink
                                    :exit t

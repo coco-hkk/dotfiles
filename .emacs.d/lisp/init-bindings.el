@@ -12,9 +12,9 @@
   (which-key-idle-delay 0.4))
 
 (use-package general
-  :demand t
   :config
   (general-evil-setup t)
+
   (general-create-definer hkk/leader-key
     :keymaps '(normal insert visual emacs)
     :prefix "SPC"
@@ -30,20 +30,19 @@
                                 :exit t
                                 :hint nil)
   "
-   ^Emms^             ^Jampal^                ^File^           ^Fanyi^
+   ^Emms^             ^Jampal^               ^benchmark^       ^Fanyi^
 --------------------------------------------------------------------------------
-_el_: 播放列表    _je_: change engines    _ff_: init.el     _yd_: dwim
-_ed_: 媒体库      _jr_: read buffer       _fl_: lisp        _ye_: dwim2
-_ej_: 上一首      _js_: stop              _fe_: .eamcs.d    _yh_: history
-_ek_: 下一首      _jt_: read this            ^ ^            _yq_: copy&query
+_el_: 播放列表    _je_: change engines    _bt_: show tree      _yd_: dwim
+_ed_: 媒体库      _jr_: read buffer       _bb_: show table     _ye_: dwim2
+_ej_: 上一首      _js_: stop                 ^ ^               _yh_: history
+_ek_: 下一首      _jt_: read this            ^ ^               _yq_: copy&query
 _er_: 列表重播
 _es_: 列表随机
 
-   ^benchmark^        ^Others^
+                                  ^Others^
 --------------------------------------------------------------------------------
-_bt_: show tree     _s_: toggle eshell
-_bb_: show table    _w_: whitespace
-                    _t_: themes
+_ff_: init.el    _s_: toggle eshell    _t_: themes
+_fl_: lisp       _w_: whitespace       _p_: proced
 
 "
   ("bb" benchmark-init/show-durations-tabulated)
@@ -63,7 +62,6 @@ _bb_: show table    _w_: whitespace
 
   ("ff" (lambda () (interactive) (find-file (expand-file-name "~/.emacs.d/init.el"))))
   ("fl" (lambda () (interactive) (dired (expand-file-name "~/.emacs.d/lisp/"))))
-  ("fe" (lambda () (interactive) (dired (expand-file-name "~/.emacs.d/"))))
 
   ("yd" fanyi-dwim)
   ("ye" fanyi-dwim2)
@@ -72,7 +70,8 @@ _bb_: show table    _w_: whitespace
 
   ("s" eshell-toggle)
   ("w" whitespace-mode)
-  ("t" counsel-load-theme)
+  ("t" consult-theme)
+  ("p" proced)
 
   ("q" nil "quit" :color pink))
 

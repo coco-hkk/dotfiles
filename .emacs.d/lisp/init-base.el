@@ -65,9 +65,21 @@
 (set-frame-parameter (selected-frame) 'fullscreen 'maximized)
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
-(set-face-attribute 'default nil :font "ubuntu mono" :height 140)
-(set-face-attribute 'fixed-pitch nil :font "ubuntu mono" :height 1.0)
+;; face sttribute
+(set-face-attribute 'default        nil :font "ubuntu mono" :height 140)
+(set-face-attribute 'fixed-pitch    nil :font "ubuntu mono" :height 1.0)
 (set-face-attribute 'variable-pitch nil :font "ubuntu mono" :height 1.0 :weight 'regular)
+
+;; 中英文字体设置
+(defun set-font (english chinese english-size chinese-size)
+  "Set CHINESE, ENGLISH font and size."
+  (set-face-attribute 'default nil :font
+                      (format "%s:pixelsize=%d"  english english-size))
+  (dolist (charset '(kana han symbol cjk-misc bopomofo))
+    (set-fontset-font (frame-parameter nil 'font) charset
+                      (font-spec :family chinese :size chinese-size))))
+
+(set-font "ubuntu mono" "ubuntu mono" 24 24)
 
 (provide 'init-base)
 ;;; init-base.el ends here

@@ -3,15 +3,16 @@
 ;;; Code:
 
 (use-package projectile
-  :defer t
+  :bind ("C-c p" . projectile-command-map)
   :config
-  (projectile-mode)
-  :custom
-  (projectile-completion-system 'ivy)
-  (projectile-project-search-path '("f:/github" "d:/Emacs/.emacs.d" "f:/Test"))
-  (projectile-sort-order 'recentf)
-  :bind-keymap
-  ("C-c p" . projectile-command-map))
+  (projectile-mode +1)
+  (setq projectile-completion-system 'ivy
+        projectile-enable-caching t
+        projectile-sort-order 'recentf
+        projectile-project-search-path '("d:/Emacs/.emacs.d"
+                                         "f:/github"
+                                         "e:/QT"
+                                         "f:/Test")))
 
 (use-package counsel-projectile
   :after projectile

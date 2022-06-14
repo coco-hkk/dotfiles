@@ -3,13 +3,13 @@
 ;;; Code:
 
 (use-package yasnippet
-  :defer t
   :hook
-  (prog-mode . yas-minor-mode)
-  :custom
-  (yas-indent-line 'fixed)
+  ((prog-mode
+    markdown-mode) . yas-minor-mode)
   :config
-  (yas-global-mode))
+  (yas-global-mode)
+
+  (setq yas-indent-line 'fixed))
 
 ;;(use-package yasnippet-snippets
 ;;  :after yasnippet)

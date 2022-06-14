@@ -2,9 +2,9 @@
 ;;; Commentary:
 ;;; Code:
 
-(setq org-roam-directory "f:/GitHub/roam/note")
-(setq org-roam-dailies-directory "f:/GitHub/roam/dailies")
-(setq org-roam-graph-executable "d:/Graphviz/bin/dot.exe")
+(setq org-roam-directory "f:/GitHub/roam/note"
+      org-roam-dailies-directory "f:/GitHub/roam/dailies"
+      org-roam-graph-executable "d:/Graphviz/bin/dot.exe")
 
 (use-package org-roam
   :defer t
@@ -23,10 +23,10 @@
       :unnarrowed t)))
 
   (org-roam-dailies-capture-templates
-      '(("d" "default" entry
-         "* %?"
-         :target (file+head "%<%Y-%m-%d>.org"
-                            "#+title: %<%Y-%m-%d>\n"))))
+   '(("d" "default" entry
+      "* %?"
+      :target (file+head "%<%Y-%m-%d>.org"
+                         "#+title: %<%Y-%m-%d>\n"))))
   :config
   (org-roam-db-autosync-mode)
 
@@ -56,7 +56,7 @@
   (deft-directory org-roam-directory))
 
 (use-package org-roam-bibtex
-  :after (org-roam)
+  :after org-roam
   :hook (org-roam-mode . org-roam-bibtex-mode)
   :config
                                         ; (require 'org-ref))

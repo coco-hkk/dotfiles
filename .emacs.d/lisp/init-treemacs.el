@@ -3,9 +3,7 @@
 ;;; Code:
 
 (use-package treemacs
-  :bind
-  (:map global-map
-        ("M-0" . treemacs-select-window))
+  :bind ("M-0" . treemacs-select-window)
   :config
   (progn
     (setq treemacs-collapse-dirs                   (if treemacs-python-executable 3 0)
@@ -36,7 +34,6 @@
           treemacs-no-png-images                   nil
           treemacs-no-delete-other-windows         t
           treemacs-project-follow-cleanup          nil
-          treemacs-persist-file                    (expand-file-name ".cache/treemacs-persist" user-emacs-directory)
           treemacs-position                        'left
           treemacs-read-string-input               'from-child-frame
 
@@ -84,23 +81,18 @@
       (`(t . _)
        (treemacs-git-mode 'simple)))
 
-    (treemacs-hide-gitignored-files-mode t)))
+    (treemacs-hide-gitignored-files-mode t))
 
-(use-package treemacs-evil
-  :after treemacs evil)
+  (use-package treemacs-evil)
+  (use-package treemacs-projectile)
+  (use-package treemacs-magit)
 
-(use-package treemacs-projectile
-  :after treemacs projectile)
+  (use-package treemacs-persp
+    :config (treemacs-set-scope-type 'Perspectives))
+  )
 
 (use-package treemacs-icons-dired
   :hook (dired-mode . treemacs-icons-dired-mode))
-
-(use-package treemacs-magit
-  :after treemacs magit)
-
-(use-package treemacs-persp
-  :after treemacs persp-mode
-  :config (treemacs-set-scope-type 'Perspectives))
 
 (defhydra hydra-treemacs (
                           :color pink

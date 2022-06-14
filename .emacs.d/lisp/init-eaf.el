@@ -16,10 +16,11 @@
   :load-path "site-lisp/eaf"
   :defer 2
   :init
-  (setq eaf-enable-debug t)
-  (setq eaf-proxy-type "socks5")
-  (setq eaf-proxy-host "127.0.0.1")
-  (setq eaf-proxy-port "10800")
+  (setq eaf-enable-debug t
+        ;;eaf-proxy-type "socks5"
+        ;;eaf-proxy-host "127.0.0.1"
+        ;;eaf-proxy-port "10800"
+        )
   :config
   (require 'eaf-browser)
 
@@ -39,20 +40,19 @@
   (require 'eaf-org-previewer)
   (require 'eaf-markdown-previewer))
 
-(defhydra hydra-eaf (
-                     :color pink
-                     :exit t
-                     :hint nil)
+(defhydra hydra-eaf (:color pink
+                            :exit t
+                            :hint nil)
   "
 ^browse^        ^mindmap^       ^File Manager^      ^open^
 ^^^^^^^^-------------------------------------------------------
 _b_: browse     _m_: create     _f_: manager      _o_: open
-_B_: history    _M_: open
+_s_: search     _M_: open
   ^ ^             ^ ^
   ^ ^             ^ ^              ^ ^
 "
   ("b" eaf-open-browser)
-  ("B" eaf-open-browser-with-history)
+  ("s" eaf-open-browser-with-history)
 
   ("m" eaf-create-mindmap)
   ("M" eaf-open-mindmap)

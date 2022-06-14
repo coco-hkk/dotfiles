@@ -6,20 +6,18 @@
 (use-package ace-window
   :bind
   ("M-o" . ace-window)
-  :custom
-  (aw-scope 'frame)
-  (aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
-  (aw-minibuffer-flag t)
   :config
+  (setq aw-scope 'frame
+        aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)
+        aw-minibuffer-flag t)
+
   (ace-window-display-mode 1))
 
 ;; 内置插件。窗口布局 undo/redo
 ;; 默认快捷键为 C-c 方向键左/右
 (use-package winner
   :straight (:type built-in)
-  :defer 2
-  :config
-  (winner-mode))
+  :hook (after-init . winner-mode))
 
 (provide 'init-window)
 ;;; init-window.el ends here

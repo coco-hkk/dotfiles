@@ -6,7 +6,8 @@
   :defer t
   :init
   (setq markdown-command "multimarkdown")
-  :hook (markdown-mode . (lambda ()
+  :hook
+  (markdown-mode . (lambda ()
                            (dolist (face '((markdown-header-face-1 . 1.2)
                                            (markdown-header-face-2 . 1.1)
                                            (markdown-header-face-3 . 1.0)

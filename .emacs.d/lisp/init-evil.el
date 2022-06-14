@@ -4,10 +4,9 @@
 
 (use-package evil
   :hook (after-init . evil-mode)
-  :custom
-  (evil-want-integration t)
-  (evil-want-keybinding nil)
-  (org-export-with-broken-links t)
+  :init
+  (setq evil-want-integration t
+        evil-want-keybinding nil)
   :config
   (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
 
@@ -21,9 +20,7 @@
   (evil-collection-init))
 
 (use-package evil-surround
-  :after evil
-  :config
-  (global-evil-surround-mode 1))
+  :hook (evil-mode . global-evil-surround-mode))
 
 ;; 注释
 (use-package evil-nerd-commenter

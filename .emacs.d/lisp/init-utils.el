@@ -4,21 +4,15 @@
 
 ;; 记录键鼠输入指令
 (use-package command-log-mode
-  :defer t
   :commands command-log-mode)
 
 ;; 帮助格式美化
 (use-package helpful
-  :defer t
-  :custom
-  (counsel-describe-function-function #'helpful-callable)
-  (counsel-describe-variable-function #'helpful-variable)
-  (counsel-describe-symbol-function #'helpful-symbol)
   :bind
-  ([remap describe-function] . counsel-describe-function)
+  ([remap describe-function] . helpful-function)
   ([remap describe-command] . helpful-command)
-  ([remap describe-variable] . counsel-describe-variable)
-  ([remap describe-symbol] . counsel-describe-symbol)
+  ([remap describe-variable] . helpful-variable)
+  ([remap describe-symbol] . helpful-symbol)
   ([remap describe-key] . helpful-key))
 
 ;; 自动保存
@@ -29,18 +23,21 @@
 
 ;; 自动消除尾部空白
 (use-package ws-butler
-  :defer t
   :hook ((text-mode
           prog-mode) . ws-butler-mode))
 
 ;; 用不同颜色标记多级括号
 (use-package rainbow-delimiters
-  :defer t
   :hook (prog-mode . rainbow-delimiters-mode))
 
-;; Keep ~/.emacs.d clean
-(use-package no-littering
-  :defer 1)
+;; undo tree
+(use-package undo-tree
+  :hook (after-init . global-undo-tree-mode))
+
+;; 对齐
+(use-package valign
+  :hook ((org-mode
+         markdown-mode) . valign-mode))
 
 (provide 'init-utils)
 ;;; init-utils.el ends here

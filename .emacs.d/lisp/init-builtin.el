@@ -7,6 +7,16 @@
   :straight (:type built-in)
   :hook (after-init . save-place-mode))
 
+;;; recentf
+(use-package recentf
+  :straight (:type built-in)
+  :hook (after-init . recentf-mode))
+
+;; minibuffer history save
+(use-package savehist
+  :straight (:type built-in)
+  :hook (after-init . savehist-mode))
+
 ;;; 高亮当前行
 (use-package hl-line
   :straight (:type built-in)
@@ -20,21 +30,20 @@
   (hs-special-modes-alist
    (mapcar 'purecopy
            '((c-mode "{" "}" "/[*/]" nil nil)
-             (c++-mode "{" "}" "/[*/]" nil nil)
-             (rust-mode "{" "}" "/[*/]" nil nil)))))
+             (c++-mode "{" "}" "/[*/]" nil nil)))))
 
 ;;; 处理文件中特别长的行，防止界面卡死
 (use-package so-long
   :straight (:type built-in)
-  :config (global-so-long-mode 1))
+  :hook (after-init . global-so-long-mode))
 
 ;;; Emacs 打开的文件若在硬盘中被修改，需要自动更新 buffer
 (use-package autorevert
   :straight (:type built-in)
   :hook
   (after-init . global-auto-revert-mode)
-  :custom
-  (global-auto-revert-non-file-buffers t))
+  :config
+  (setq global-auto-revert-non-file-buffers t))
 
 ;;; 选中文本后，直接输入就可以，省去了删除操作
 (use-package delsel
@@ -44,27 +53,25 @@
 ;;; parenthesis 高亮显示配对的( ) [ ] { } 括号
 (use-package paren
   :straight (:type built-in)
-  :hook (after-init . show-paren-mode)
-  :config
-  (set-face-attribute 'show-paren-match-expression nil :background "#363e4a")
-  (setq show-paren-when-point-inside-paren t
-        show-paren-when-point-in-periphery t))
+  :hook (after-init . show-paren-mode))
 
 ;;; ERC
 (use-package erc
-  :straight (:type built-in)
   :defer t
+  :straight (:type built-in)
   :defines erc-autojoin-channels-alist
-  :init (setq erc-rename-buffers t
-              erc-interpret-mirc-color t
-              erc-lurker-hide-list '("JOIN" "PART" "QUIT")
-              erc-autojoin-channels-alist '(("freenode.net" "#emacs"))))
+  :config
+  (setq erc-rename-buffers t
+        erc-interpret-mirc-color t
+        erc-lurker-hide-list '("JOIN" "PART" "QUIT")
+        erc-autojoin-channels-alist '(("freenode.net" "#emacs"))))
 
 ;; Process
 (use-package proced
+  :defer t
   :straight (:type built-in)
-  :defer 1
-  :init
+  :hook (proced-mode . (lambda () (proced-toggle-auto-update 1)))
+  :config
   (setq-default proced-format 'verbose)
   (setq proced-auto-update-flag t
         proced-auto-update-interval 3))
