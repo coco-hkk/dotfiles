@@ -18,7 +18,6 @@
 
 ;; Variables configured via the interactive 'customize' interface
 (setq custom-file (locate-user-emacs-file "custom.el"))
-(load custom-file)
 
 (require 'init-package)
 (require 'init-base)
@@ -47,6 +46,8 @@
 
 ;; Make gc pauses faster by decreasing the threshold.
 (setq gc-cons-threshold (* 2 1000 1000))
+
+(load custom-file)
 
 (provide 'init.el)
 ;;; init.el ends here

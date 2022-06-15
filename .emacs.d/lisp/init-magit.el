@@ -3,7 +3,7 @@
 ;;; Code:
 
 (use-package magit
-  :defer t)
+  :defer 5)
 
 (provide 'init-magit)
 ;;; init-magit.el ends here

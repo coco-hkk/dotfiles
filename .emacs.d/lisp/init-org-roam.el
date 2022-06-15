@@ -7,7 +7,7 @@
       org-roam-graph-executable "d:/Graphviz/bin/dot.exe")
 
 (use-package org-roam
-  :defer t
+  :defer 5
   :custom
   (org-roam-completion-everywhere t)
 

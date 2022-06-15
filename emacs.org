@@ -1,0 +1,1424 @@
+#+OPTIONS: toc: 2
+#+TITLE: Emacs
+#+AUTHOR: coco-hkk
+#+DATE: <2022-06-14 周二>
+
+* 目录 :TOC:noexport:
+- [[#package-管理][package 管理]]
+  - [[#straightel-配置][straight.el 配置]]
+  - [[#use-package-表达式][use-package 表达式]]
+- [[#性能分析][性能分析]]
+  - [[#benchmark][benchmark]]
+  - [[#垃圾回收][垃圾回收]]
+- [[#基础][基础]]
+  - [[#编码配置][编码配置]]
+  - [[#窗体配置][窗体配置]]
+  - [[#状态栏配置][状态栏配置]]
+  - [[#字体][字体]]
+- [[#主题][主题]]
+  - [[#all-the-icons][all-the-icons]]
+  - [[#doom-themes][doom-themes]]
+  - [[#centaur-tabs][centaur-tabs]]
+  - [[#dashboard][dashboard]]
+- [[#状态栏][状态栏]]
+  - [[#doom-modeline][doom-modeline]]
+  - [[#minions][minions]]
+- [[#按键绑定][按键绑定]]
+  - [[#general][general]]
+  - [[#hydra][hydra]]
+- [[#搜索][搜索]]
+  - [[#consult][consult]]
+- [[#补全][补全]]
+  - [[#orderless][orderless]]
+  - [[#corfu][corfu]]
+  - [[#corfu-doc][corfu-doc]]
+  - [[#cape][cape]]
+  - [[#all-the-icons-completion][all-the-icons-completion]]
+  - [[#vertico][vertico]]
+  - [[#marginalia][marginalia]]
+  - [[#embark][embark]]
+  - [[#embark-consult][embark-consult]]
+  - [[#yasnippet][yasnippet]]
+- [[#编码程序][编码程序]]
+  - [[#format-all][format-all]]
+  - [[#flycheck][flycheck]]
+  - [[#lsp-bridge][lsp-bridge]]
+  - [[#dap-mode][dap-mode]]
+- [[#项目管理][项目管理]]
+  - [[#projectile][projectile]]
+  - [[#counsel-projectile][counsel-projectile]]
+  - [[#magit][magit]]
+- [[#内建插件][内建插件]]
+  - [[#artist-mode][artist-mode]]
+  - [[#proced][proced]]
+- [[#org][org]]
+  - [[#org-1][org]]
+  - [[#toc-org][toc-org]]
+  - [[#org-tempo][org-tempo]]
+  - [[#org-superstar][org-superstar]]
+  - [[#visual-fill-column][visual-fill-column]]
+  - [[#org-present][org-present]]
+  - [[#evil-org][evil-org]]
+  - [[#org-roam][org-roam]]
+  - [[#org-roam-ui][org-roam-ui]]
+  - [[#deft][deft]]
+  - [[#org-roam-timestamps][org-roam-timestamps]]
+- [[#markdown][markdown]]
+  - [[#markdown-1][markdown]]
+  - [[#pangu-spacing][pangu-spacing]]
+- [[#evil][evil]]
+  - [[#evil-1][evil]]
+  - [[#evil-collection][evil-collection]]
+  - [[#evil-surround][evil-surround]]
+  - [[#evil-nerd-commenter][evil-nerd-commenter]]
+  - [[#sis][sis]]
+- [[#tts][TTS]]
+- [[#翻译][翻译]]
+  - [[#fanyi][fanyi]]
+- [[#媒体][媒体]]
+  - [[#emms][emms]]
+- [[#其它][其它]]
+  - [[#no-littering][no-littering]]
+  - [[#command-log-mode][command-log-mode]]
+  - [[#helpful][helpful]]
+  - [[#rainbow-delimiters][rainbow-delimiters]]
+  - [[#super-save][super-save]]
+  - [[#ws-butler][ws-butler]]
+  - [[#ace-window][ace-window]]
+  - [[#winner][winner]]
+  - [[#which-key][which-key]]
+  - [[#undo-tree][undo-tree]]
+  - [[#valign][valign]]
+- [[#eaf][EAF]]
+- [[#erc][ERC]]
+- [[#footnotes][Footnotes]]
+
+* package 管理
+使用 *straight.el* 替代 emacs 自带 package.el 包管理工具，同时使用 *use-package* 配
+置 package。
+
+鉴于网速太差，建议先在 .emacs.d 中 git clone 一份 straight.el。
+
+** straight.el 配置
+#+begin_src emacs-lisp
+  (unless (featurep 'straight)
+    ;; Bootstrap straight.el
+    (defvar bootstrap-version)
+    (let ((bootstrap-file
+           (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+          (bootstrap-version 5))
+      (unless (file-exists-p bootstrap-file)
+        (with-current-buffer
+            (url-retrieve-synchronously
+             "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+             'silent 'inhibit-cookies)
+          (goto-char (point-max))
+          (eval-print-last-sexp)))
+      (load bootstrap-file nil 'nomessage)))
+
+  ;; 替换package.el默认straight.el为包管理工具
+  (setq straight-use-package-by-default t)
+  ;; straight.el 使用git clone时浅层下载
+  (setq straight-vc-git-default-clone-depth 1)
+
+  ;; straight.el 使用use-package 语法
+  (straight-use-package 'use-package)
+#+end_src
+
+- 使用 ~straight-remove-unused-repos~ 删除无用的 package。
+- 使用 ~straight-pull-all~ 更新 package。
+
+** use-package 表达式
+参考 use-package 官网文档[fn:1]。
+
+#+begin_src emacs-lisp
+  (use-package benchmark-init
+     :ensure t     ;; 安装尚未安装的软件包，但不会使其保持最新状态。
+     :after        ;; 只有在另一个包被加载后配置此包才有意义，因为某些变量或函数直到那时才在范围内。
+     :init         ;; 包被加载之前执行代码。
+     :config       ;; 包被加载后执行代码。
+     :custom       ;; 允许对包的自定义变量进行定制。
+     :custom-face  ;; 允许自定义faces。
+     :defer        ;; 延迟加载，若是数字则表示在指定数字秒的空闲时候后加载。
+     :demand       ;; 取消包的延迟加载，强制立即加载软件包。
+     :bind         ;; 按键绑定。
+     :hook         ;; 将函数添加到包的钩子上。
+     :command      ;; 它会为这些命令创建autoload并将模块的加载推迟到使用它们之前。
+     :mode         ;; 在 auto-mode-alist变量中建立延迟绑定。
+     :interpreter  ;; 在 interpreter-mode-alist变量中建立延迟绑定。
+     :if           ;; 条件加载。还有 :when :unless.
+     :disable      ;; 关闭模块，不使用。
+     )
+#+end_src
+
+* 性能分析
+** benchmark
+emacs 和 packages 启动时间统计。在 package 管理工具之后配置 benchmark。
+
+- ~M-x benchmark-init/show-durations-tabulated~ 以表格方式呈现统计。
+- ~M-x benchmark-init/show-durations-tree~ 以树形方式呈现统计和启动次序。
+
+#+begin_src emacs-lisp
+(use-package benchmark-init
+  :hook (after-init . benchmark-init/deactivate))
+#+end_src
+
+** 垃圾回收
+
+#+begin_src emacs-lisp
+  ;; The default is 800 kilobytes.  Measured in bytes.
+  (setq gc-cons-threshold (* 100 1000 1000))
+#+end_src
+
+#+begin_src emacs-lisp
+  ;; Make gc pauses faster by decreasing the threshold.
+  (setq gc-cons-threshold (* 2 1000 1000))
+#+end_src
+
+* 基础
+** 编码配置
+
+#+begin_src emacs-lisp
+(set-language-environment 'utf-8)
+(set-locale-environment "utf-8")
+(set-default-coding-systems 'utf-8)
+#+end_src
+
+** 窗体配置
+设置窗体透明度，初始化全屏。
+
+#+begin_src emacs-lisp
+(set-frame-parameter (selected-frame) 'alpha '(85 . 85))
+(add-to-list 'default-frame-alist '(alpha . (85 . 85)))
+(set-frame-parameter (selected-frame) 'fullscreen 'maximized)
+(add-to-list 'default-frame-alist '(fullscreen . maximized))
+#+end_src
+
+** 状态栏配置
+
+#+begin_src emacs-lisp
+  ;; 显示文件大小
+  (size-indication-mode 1)
+  ;; 显示电池状态
+  (display-battery-mode 1)
+
+  ;; 显示时间和cpu负载状态
+  (setq display-time-format "%H:%M %a"
+        display-time-default-load-average 2)
+  (display-time-mode 1)
+#+end_src
+
+** 字体
+中英文等宽字体，间距配置。
+
+#+begin_src emacs-lisp
+  ;; face sttribute
+  (set-face-attribute 'default        nil :font "ubuntu mono" :height 140)
+  (set-face-attribute 'fixed-pitch    nil :font "ubuntu mono" :height 1.0)
+  (set-face-attribute 'variable-pitch nil :font "ubuntu mono" :height 1.0 :weight 'regular)
+
+  ;; 中英文字体设置
+  (defun set-font (english chinese english-size chinese-size)
+    "Set CHINESE, ENGLISH font and size."
+    (set-face-attribute 'default nil :font
+                        (format "%s:pixelsize=%d"  english english-size))
+    (dolist (charset '(kana han symbol cjk-misc bopomofo))
+      (set-fontset-font (frame-parameter nil 'font) charset
+                        (font-spec :family chinese :size chinese-size))))
+
+  (set-font "ubuntu mono" "ubuntu mono" 24 24)
+#+end_src
+
+* 主题
+** all-the-icons
+Linux 和 macOS 执行 =M-x all-the-icons-install-fonts= 安装字体。windows 需要手动下
+载并安装字体。参考这里[fn:2]。
+
+#+begin_src emacs-lisp
+(use-package all-the-icons
+  :if (display-graphic-p))
+#+end_src
+
+** doom-themes
+需要先安装 all-the-icons，load-theme 的主题会影响图标的显示。
+
+#+begin_src emacs-lisp
+(use-package doom-themes
+  :config
+  (setq doom-themes-enable-bold t
+        doom-themes-enable-italic t)
+  (load-theme 'doom-dracula t)
+  (doom-themes-visual-bell-config)
+  (doom-themes-org-config))
+#+end_src
+
+** centaur-tabs
+tab 标签。参考这里[fn:3]。
+
+#+begin_src emacs-lisp
+(use-package centaur-tabs
+  :hook ((dashboard-mode
+          dired-mode
+          term-mode
+          calendar-mode
+          org-agenda-mode
+          helpful-mode
+          dap-mode) . centaur-tabs-local-mode)
+  :bind
+  ("C-<prior>" . centaur-tabs-backward)
+  ("C-<next>" . centaur-tabs-forward)
+  :config
+  (setq centaur-tabs-style "wave"
+        centaur-tabs-height 24
+        centaur-tabs-set-icons t
+        centaur-tabs-plain-icons t
+
+        centaur-tabs-gray-out-icons 'buffer
+        centaur-tabs-set-bar 'under
+        x-underline-at-descent-line t
+
+        ;; 不显示关闭按钮
+        centaur-tabs-set-close-button nil
+        centaur-tabs-adjust-buffer-order t
+
+        centaur-tabs-show-navigation-buttons t
+        centaur-tabs-show-count t
+        centaur-tabs-cycle-scope 'tab)
+
+  (centaur-tabs-mode t)
+  (centaur-tabs-headline-match))
+#+end_src
+
+** dashboard
+欢迎界面。参考这里[fn:4]。
+
+#+begin_src emacs-lisp
+(use-package dashboard
+  :hook (after-init . dashboard-setup-startup-hook)
+  :init
+  (defconst homepage-url "https://github.com/coco-hkk/dotfiles")
+  (defconst stars-url (concat homepage-url "/stargazers"))
+
+  ;; Format: "(icon title help action face prefix suffix)"
+  (setq dashboard-navigator-buttons `(((,(if (fboundp 'all-the-icons-octicon) (all-the-icons-octicon "mark-github"      :height 1.0 :v-adjust  0.0) "★")
+                                        "GitHub" "Browse" (lambda (&rest _) (browse-url homepage-url)))
+                                       (,(if (fboundp 'all-the-icons-octicon) (all-the-icons-octicon "heart"            :height 1.1 :v-adjust  0.0) "♥")
+                                        "Stars" "Show stars" (lambda (&rest _) (browse-url stars-url)))
+                                       (,(if (fboundp 'all-the-icons-material) (all-the-icons-material "update"         :height 1.1 :v-adjust -0.2) "♺")
+                                        "Update" "Update packages synchronously" (lambda (&rest _) (auto-package-update-now)) success))))
+
+  :config
+  (setq dashboard-banner-logo-title "自律 · 慎独"              ; 自定义个性签名
+        dashboard-startup-banner "~/.emacs.d/img/logo.png"     ; 自定义 logo
+        dashboard-projects-backend 'projectile                 ; 搭配 projectile 插件
+        dashboard-set-heading-icons t
+        dashboard-set-file-icons t
+        dashboard-set-init-info t
+        dashboard-set-navigator t
+        dashboard-center-content t
+
+        dashboard-items '((recents   . 5)
+                          (projects  . 5)
+                          (bookmarks . 5)
+                          (registers . 5)
+                          (agenda    . 5))))
+#+end_src
+
+* 状态栏
+** doom-modeline
+需要先安装 all-the-icons，参考这里[fn:5]。
+
+#+begin_src emacs-lisp
+  (use-package doom-modeline
+    :hook (after-init . doom-modeline-mode)
+    :config
+    (setq doom-modeline-enable-word-count t
+          doom-modeline-minor-modes t
+          doom-modeline-hud t
+          doom-modeline-indent-info t
+          doom-modeline-buffer-file-name-style 'file-name
+          doom-modeline-project-detection 'projectile))
+#+end_src
+
+** minions
+隐藏状态栏 minor mode。
+
+#+begin_src emacs-lisp
+  (use-package minions
+    :hook (doom-modeline-mode . minions-mode))
+#+end_src
+
+* 按键绑定
+** general
+general 用于批量绑定按键。相当于批量的 ~define-key~ 和 ~global-set-key~ 。
+
+#+begin_src emacs-lisp
+  (use-package general
+    :config
+    (general-evil-setup t)
+
+    (general-create-definer hkk/leader-key
+      :keymaps '(normal insert visual emacs)
+      :prefix "SPC"
+      :global-prefix "C-SPC")
+
+    (general-create-definer hkk/ctrl-c
+      :prefix "C-c"))
+#+end_src
+
+** hydra
+和 general 结合使用，将命令绑定到一系列具有公共前缀的短绑定。参考这里[fn:6]。
+
+#+begin_src emacs-lisp
+  (use-package hydra
+    :after general)
+
+  (defhydra hydra-options (:color pink
+                                  :exit t
+                                  :hint nil)
+    "
+                     ^Others^
+  ---------------------------------------------------
+  _ff_: init.el    _s_: toggle eshell    _t_: themes
+  _fl_: lisp       _w_: whitespace       _p_: proced
+
+  "
+    ("ff" (lambda () (interactive) (find-file (expand-file-name "~/.emacs.d/init.el"))))
+    ("fl" (lambda () (interactive) (dired (expand-file-name "~/.emacs.d/lisp/"))))
+
+    ("s" eshell-toggle)
+    ("w" whitespace-mode)
+    ("t" consult-theme)
+    ("p" proced)
+
+    ("q" nil "quit" :color pink))
+
+  (hkk/leader-key
+    ;; hydra keybindings
+    "a" '(hydra-options/body :which-key "options"))
+#+end_src
+
+* 搜索
+** consult
+
+#+begin_src emacs-lisp
+  (use-package consult
+    :bind (;; C-c bindings (mode-specific-map)
+           ("C-c m" . consult-mode-command)
+           ("C-c k" . consult-kmacro)
+           ;; C-x bindings (ctl-x-map)
+           ("C-x M-:" . consult-complex-command)     ;; orig. repeat-complex-command
+           ("C-x b"   . consult-buffer)              ;; orig. switch-to-buffer
+           ("C-x 4 b" . consult-buffer-other-window) ;; orig. switch-to-buffer-other-window
+           ("C-x 5 b" . consult-buffer-other-frame)  ;; orig. switch-to-buffer-other-frame
+           ("C-x r b" . consult-bookmark)            ;; orig. bookmark-jump
+           ("C-x p b" . consult-project-buffer)      ;; orig. project-switch-to-buffer
+           ;; Other custom bindings
+           ("M-y" . consult-yank-pop)                ;; orig. yank-pop
+           ("<help> a" . consult-apropos)            ;; orig. apropos-command
+           ;; M-s bindings (search-map)
+           ("M-s g" . consult-grep)
+           ("M-s G" . consult-git-grep)
+           ("M-s r" . consult-ripgrep)
+           ("M-s l" . consult-line)
+           ("M-s L" . consult-line-multi)
+           ("M-s m" . consult-multi-occur)
+           ("M-s k" . consult-keep-lines)
+           ("M-s u" . consult-focus-lines)
+           :map minibuffer-local-map
+           ("C-s" . consult-history))
+
+    :hook (completion-list-mode . consult-preview-at-point-mode)
+    :init
+    (setq register-preview-delay 0.5
+          register-preview-function #'consult-register-format)
+
+    (advice-add #'register-preview :override #'consult-register-window)
+
+    (setq xref-show-xrefs-function #'consult-xref
+          xref-show-definitions-function #'consult-xref)
+    :config
+    (consult-customize
+     consult-ripgrep
+     consult-git-grep
+     consult-grep
+     consult-bookmark
+     consult-recent-file
+     consult-xref
+     consult--source-bookmark
+     consult--source-recent-file
+     consult--source-project-recent-file
+     :preview-key (kbd "M-."))
+    )
+#+end_src
+
+* 补全
+** orderless
+补全规则配置，适用于补全相关的 package。
+
+#+begin_src emacs-lisp
+(use-package orderless
+  :config
+  (orderless-define-completion-style orderless+new
+    (orderless-matching-styles '(orderless-initialism
+                                 orderless-literal
+                                 orderless-regexp)))
+
+  (setq completion-styles '(orderless)
+        completion-category-defaults nil
+        completion-category-overrides '((command  (styles orderless+new))
+                                        (symbol   (styles orderless+new))
+                                        (variable (styles orderless+new)))))
+#+end_src
+
+** corfu
+替代 company.
+
+#+begin_src emacs-lisp
+(use-package corfu
+  :straight '(corfu :files (:defaults "extensions/*"))
+  :defer 5
+  :bind (:map corfu-map
+              ("SPC" . corfu-insert-separator)
+              ("C-j" . corfu-next)
+              ("C-k" . corfu-previous)
+              ("TAB" . corfu-insert))
+  :config
+  ;; 自动补全
+  (setq corfu-auto t
+        ;; 补全循环
+        corfu-cycle t
+        ;; minibuffer 显示帮助文档
+        corfu-echo-documentation t)
+
+  ;; (global-corfu-mode t)
+  (corfu-history-mode t)
+  (corfu-indexed-mode))
+#+end_src
+
+** corfu-doc
+corfu 显示候选项帮助文档。
+
+#+begin_src emacs-lisp
+(use-package corfu-doc
+  :hook (corfu-mode . corfu-doc-mode)
+  :config
+  (corfu-doc--popup-show)
+  (setq corfu-doc-display-within-parent-frame nil
+        corfu-doc--frame t))
+#+end_src
+
+** cape
+cape 作为 corfu 补全后端。
+
+#+begin_src emacs-lisp
+(use-package cape
+  :after corfu
+  :config
+  (add-to-list 'completion-at-point-functions #'cape-file)
+  (add-to-list 'completion-at-point-functions #'cape-dabbrev)
+  (add-to-list 'completion-at-point-functions #'cape-keyword))
+#+end_src
+
+** all-the-icons-completion
+minibuffer 显示图标。
+
+#+begin_src emacs-lisp
+(use-package all-the-icons-completion
+  :hook
+  (after-init . all-the-icons-completion-mode)
+  (marginalia-mode . all-the-icons-completion-marginalia-setup))
+#+end_src
+
+** vertico
+minibuffer 补全。
+
+#+begin_src emacs-lisp
+  (use-package vertico
+    :straight (vertico :files (:defaults "extensions/*"))
+    :hook (after-init . vertico-mode)
+    :custom-face
+    (vertico-current ((t (:background "#3a3f5a"))))
+    :config
+    (vertico-mode)
+    (vertico-multiform-mode)
+    (vertico-indexed-mode)
+    (setq vertico-count 10)
+
+    (bind-keys :map vertico-map
+               ("C-j" . vertico-next)
+               ("C-k" . vertico-previous)))
+#+end_src
+
+** marginalia
+minibuffer 富文本注释。
+
+#+begin_src emacs-lisp
+  (use-package marginalia
+    :after vertico
+    :config
+    (marginalia-mode)
+    (marginalia--ellipsis)
+    (marginalia--minibuffer-setup)
+    (marginalia-classify-original-category)
+    (setq marginalia--command t))
+#+end_src
+
+** embark
+minibuffer 上下文菜单和操作。
+
+#+begin_src emacs-lisp
+  (use-package embark
+    :bind
+    (("C-." . embark-act)         ;; pick some comfortable binding
+     ("M-." . embark-dwim)        ;; good alternative: M-.
+     ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
+    )
+#+end_src
+
+** embark-consult
+
+#+begin_src emacs-lisp
+  (use-package embark-consult
+    :after (:all embark consult)
+    :hook
+    (embark-collect-mode . consult-preview-at-point-mode))
+#+end_src
+
+** yasnippet
+若使用 no-littering，则不需要设置变量 ~yas-snippet-dirs~ ，默认在 =~/.emacs.d/etc/yasnippet= 。
+
+#+begin_src emacs-lisp
+  (use-package yasnippet
+    :hook
+    ((prog-mode
+      markdown-mode) . yas-minor-mode)
+    :config
+    (yas-global-mode)
+
+    (setq yas-indent-line 'fixed))
+#+end_src
+
+* 编码程序
+** format-all
+
+#+begin_src emacs-lisp
+(use-package format-all
+  :hook
+  (prog-mode . format-all-mode))
+#+end_src
+
+** flycheck
+语法检查工具，[[https://www.flycheck.org/][官方文档]]。
+
+- 支持的[[https://www.flycheck.org/en/latest/languages.html#flycheck-languages][语言列表]]。
+- 针对具体语言，需要安装具体检查工具。
+
+#+begin_src bash
+  # 为 Python 安装
+  pip install pylint
+
+  # 为 JavaScript 安装
+  npm install eslint
+#+end_src
+
+#+begin_src emacs-lisp
+  (use-package flycheck
+    :hook (prog-mode . flycheck-mode))
+#+end_src
+
+** lsp-bridge
+下载 [[https://github.com/manateelazycat/lsp-bridge][lsp-bridge]] 到 =~/.emacs.d/site-lisp= ，直接使用 straigth.el 有问题。
+
+#+begin_src emacs-lisp
+  (use-package lsp-bridge
+    :straight nil
+    :load-path "site-lisp/lsp-bridge"
+    :hook (prog-mode . lsp-bridge-mode)
+    :config
+    (setq lsp-bridge-completion-candidates t
+          lsp-bridge-enable-signature-help t
+          lsp-bridge-enable-log t))
+
+  ;; 补全
+  (use-package acm
+    :straight nil
+    :load-path "site-lisp/lsp-bridge/acm"
+    :bind (:map acm-mode-map
+                ("C-j" . acm-select-next)
+                ("C-k" . acm-select-prev))
+    :config
+    (acm-doc-show)
+    (setq acm-mode t
+          acm-enable-dabbrev t
+          acm-backend-elisp-min-length 4
+          acm-backend-tempel-candidates-number 4))
+#+end_src
+
+** dap-mode
+[[https://github.com/emacs-lsp/dap-mode][调试工具]]。
+
+#+begin_src emacs-lisp
+  (use-package dap-mode
+    :commands dap-debug
+    :hook ((python-mode . dap-ui-mode)
+           (python-mode . dap-mode)
+           (c-mode . dap-mode))
+    :config
+    (dap-mode 1)
+    (dap-auto-configure-mode)
+
+    (dap-ui-mode 1)
+    (dap-ui-controls-mode 1)
+    (dap-tooltip-mode 1)
+    (tooltip-mode 1)
+
+    (require 'dap-hydra)
+
+    (require 'dap-python)
+    (setq dap-python-debugger 'debugpy)
+    (defun dap-python--pyenv-executable-find (command)
+      (with-venv (executable-find "python")))
+
+    (require 'dap-lldb)
+    (require 'dap-gdb-lldb)
+    (setq dap-lldb-debug-program '("d:/LLVM/bin/lldb-vscode.exe")
+          dap-gdb-lldb-debug-program '("d:/LLVM/bin/lldb-vscode.exe")
+          dap-gdb-lldb-path-lldb '("d:/LLVM/bin/lldb-vscode.exe")
+          )
+    )
+#+end_src
+
+* 项目管理
+** projectile
+
+#+begin_src emacs-lisp
+  (use-package projectile
+  :bind ("C-c p" . projectile-command-map)
+  :config
+  (projectile-mode +1)
+  (setq projectile-completion-system 'ivy
+        projectile-enable-caching t
+        projectile-sort-order 'recentf
+        projectile-project-search-path '("d:/Emacs/.emacs.d"
+                                         "f:/github")))
+#+end_src
+
+** counsel-projectile
+projectile 可使用 ivy 作为补全，counsel-projectile 用于增强 ivy。
+
+#+begin_src emacs-lisp
+  (use-package counsel-projectile
+    :after projectile
+    :config (counsel-projectile-mode))
+#+end_src
+
+** magit
+
+#+begin_src emacs-lisp
+(use-package magit
+  :defer 5)
+#+end_src
+
+#+CAPTION: magit 操作
+| 操作             | 说明        |
+|------------------+-------------|
+| M-x magit-clone  |             |
+| M-x magit-status | 查看 status |
+| M-x magit-commit | 暂存文件    |
+| M-x magit-push   |             |
+| M-x magit-pull   |             |
+
+所有操作可在 ~magit-status~ 窗口中使用 ~?~ 指令查看。
+
+#+CAPTION: magit status 快捷键
+| 快捷键  | 说明          |
+|---------+---------------|
+| s       | 跟踪当前文件  |
+| S       | 跟踪所有文件  |
+| c c     | 暂存文件      |
+| C-c C-c | 提交 commit   |
+| P p     | push          |
+| \$      | magit process |
+| F p     | pull          |
+
+* 内建插件
+** artist-mode
+text 画图，通过鼠标左键或方向键画图（C-h m 查看帮助）。
+
+** proced
+各进程状态。
+
+#+begin_src emacs-lisp
+  (use-package proced
+    :defer t
+    :straight (:type built-in)
+    :hook (proced-mode . (lambda () (proced-toggle-auto-update 1)))
+    :config
+    (setq-default proced-format 'verbose)
+    (setq proced-auto-update-flag t
+          proced-auto-update-interval 3))
+#+end_src
+
+* org
+** org
+
+#+begin_src emacs-lisp
+  ;; Turn on indentation and auto-fill mode for Org files
+  (defun hkk/org-mode-setup ()
+    "Org Mode Setup."
+    (org-indent-mode)
+    (variable-pitch-mode 1)
+    (auto-fill-mode 0)
+    (visual-line-mode 1))
+
+  ;; font settings
+  (defun hkk/org-font-setup ()
+    "Org Font Setup."
+    (set-face-attribute 'org-document-title nil :font "ubuntu mono" :weight 'bold :height 1.4)
+
+    (dolist (face '((org-level-1 . 1.3)
+                    (org-level-2 . 1.25)
+                    (org-level-3 . 1.2)
+                    (org-level-4 . 1.1)))
+      (set-face-attribute (car face) nil :font "ubuntu mono" :weight 'medium :height (cdr face)))
+
+    (require 'org-indent)
+
+    ;; Ensure that anything that should be fixed-pitch in Org files appears that way
+    (set-face-attribute 'org-block   nil :foreground nil :inherit 'fixed-pitch)
+    (set-face-attribute 'org-table   nil  :inherit 'fixed-pitch)
+    (set-face-attribute 'org-formula nil  :inherit 'fixed-pitch)
+    (set-face-attribute 'org-code    nil   :inherit '(shadow fixed-pitch))
+    (set-face-attribute 'org-indent  nil :inherit '(org-hide fixed-pitch))
+    (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+    (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
+    (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
+    (set-face-attribute 'org-checkbox  nil :inherit 'fixed-pitch)
+
+    ;; Get rid of the background on column views
+    (set-face-attribute 'org-column       nil :background nil)
+    (set-face-attribute 'org-column-title nil :background nil))
+
+  (use-package org
+    :straight (:type built-in)
+    :after evil-collection
+    :config
+    (hkk/org-mode-setup)
+    (hkk/org-font-setup)
+
+    (setq org-ellipsis " ▾"
+          org-hide-emphasis-markers t
+          org-src-fontify-natively t
+          org-fontify-quote-and-verse-blocks t
+          org-src-tab-acts-natively t
+          org-edit-src-content-indentation 2
+          org-hide-block-startup nil
+          org-src-preserve-indentation nil
+          org-startup-folded 'content
+          org-cycle-separator-lines 2)
+
+    ;; org refile
+    (setq org-refile-targets
+          '((nil :maxlevel . 1)
+            ("org-agenda-files" :maxlevel . 1)))
+
+    (setq org-outline-path-complete-in-steps nil)
+    (setq org-refile-use-outline-path t)
+
+    ;; org babel
+    (org-babel-do-load-languages
+     'org-babel-load-languages
+     '((emacs-lisp . t)
+       (python . t))))
+#+end_src
+
+** toc-org
+org 目录。
+
+#+begin_src emacs-lisp
+  (use-package toc-org
+    :hook (org-mode . toc-org-mode))
+#+end_src
+
+** org-tempo
+Org > 9.2 快速插入代码块，<快捷吗 + <TAB> 展开模板。
+
+#+begin_src emacs-lisp
+  (use-package org-tempo
+    :after org
+    :straight (:type built-in)
+    :config
+    (add-to-list 'org-structure-template-alist '("sh" . "src sh"))
+    (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
+    (add-to-list 'org-structure-template-alist '("li" . "src lisp"))
+    (add-to-list 'org-structure-template-alist '("sc" . "src scheme"))
+    (add-to-list 'org-structure-template-alist '("ts" . "src typescript"))
+    (add-to-list 'org-structure-template-alist '("py" . "src python"))
+    (add-to-list 'org-structure-template-alist '("go" . "src go"))
+    (add-to-list 'org-structure-template-alist '("yaml" . "src yaml"))
+    (add-to-list 'org-structure-template-alist '("json" . "src json")))
+#+end_src
+
+** org-superstar
+
+#+begin_src emacs-lisp
+  (use-package org-superstar
+    :hook (org-mode . org-superstar-mode)
+    :config
+    (setq org-superstar-remove-leading-stars t))
+#+end_src
+
+** visual-fill-column
+使 org 内容居中显示，像编辑文档。
+
+#+begin_src emacs-lisp
+  (use-package visual-fill-column
+    :hook (org-mode . (lambda ()
+                        (visual-fill-column-mode 1)
+                        (setq visual-fill-column-width 100
+                              visual-fill-column-center-text t))))
+#+end_src
+
+** org-present
+以 PPT 方式显示文档。
+
+#+begin_src emacs-lisp
+  (defun hkk/org-present-prepare-slide ()
+    "Org present slide settings."
+    (org-overview)
+    (org-show-entry)
+    (org-show-children))
+
+  (defun hkk/org-present-hook ()
+    "Org present hook settings."
+    (setq-local face-remapping-alist '((default (:height 1.5) variable-pitch)
+                                       (header-line (:height 4.5) variable-pitch)
+                                       (org-document-title (:height 1.75) org-document-title)
+                                       (org-code (:height 1.55) org-code)
+                                       (org-verbatim (:height 1.55) org-verbatim)
+                                       (org-block (:height 1.25) org-block)
+                                       (org-block-begin-line (:height 0.7) org-block)))
+    (setq header-line-format " ")
+    (org-present-hide-cursor)
+    (org-display-inline-images)
+    (org-present-read-only))
+
+  (defun hkk/org-present-quit-hook ()
+    "Org present quit hook settings."
+    (setq-local face-remapping-alist '((default variable-pitch default)))
+    (setq header-line-format nil)
+    (org-present-small)
+    (org-remove-inline-images)
+    (org-present-show-cursor)
+    (org-present-read-write))
+
+  (defun hkk/org-present-prev ()
+    "Org present prev settings."
+    (interactive)
+    (org-present-prev)
+    (hkk/org-present-prepare-slide))
+
+  (defun hkk/org-present-next ()
+    "Org present next settings."
+    (interactive)
+    (org-present-next)
+    (hkk/org-present-prepare-slide))
+
+  (use-package org-present
+    :bind (:map org-present-mode-keymap
+                ("C-c j" . hkk/org-present-next)
+                ("C-c k" . hkk/org-present-prev))
+    :hook
+    (org-present-mode . hkk/org-present-hook)
+    (org-present-mode-quit . hkk/org-present-quit-hook))
+#+end_src
+
+** evil-org
+
+#+begin_src emacs-lisp
+  (use-package evil-org
+    :hook ((org-mode
+            org-agenda-mode) . evil-org-mode)
+    :config
+    (evil-org-set-key-theme '(navigation
+                              todo
+                              insert
+                              textobjects
+                              additional)))
+#+end_src
+
+** org-roam
+
+以网状结构来关联笔记、并以 backlink 的形式来展现笔记上下文的工具。
+
+#+begin_src emacs-lisp
+  (setq org-roam-directory "f:/GitHub/roam/note"
+        org-roam-dailies-directory "f:/GitHub/roam/dailies"
+        org-roam-graph-executable "d:/Graphviz/bin/dot.exe")
+
+  (use-package org-roam
+    :defer 5
+    :custom
+    (org-roam-completion-everywhere t)
+
+    (org-roam-capture-templates
+     '(("n" "note" plain
+        "%?"
+        :if-new (file+head "${slug}.org"
+                           "#+title: ${title}\n#+date: %u\n")
+        :unnarrowed t)
+       ("a" "article" plain "%?"
+        :if-new
+        (file+head "${title}.org" "#+title: ${title}\n#+filetags: :article:\n")
+        :unnarrowed t)))
+
+    (org-roam-dailies-capture-templates
+     '(("d" "default" entry
+        "* %?"
+        :target (file+head "%<%Y-%m-%d>.org"
+                           "#+title: %<%Y-%m-%d>\n"))))
+    :config
+    (org-roam-db-autosync-mode)
+
+    ;; If using org-roam-protocol
+    (require 'org-roam-protocol))
+#+end_src
+
+** org-roam-ui
+
+#+begin_src emacs-lisp
+  (use-package org-roam-ui
+    :straight
+    (:host github :repo "org-roam/org-roam-ui" :branch "main" :files ("*.el" "out"))
+    :after org-roam
+    :config
+    (setq org-roam-ui-sync-theme t
+          org-roam-ui-follow t
+          org-roam-ui-update-on-save t
+          org-roam-ui-open-on-start t))
+#+end_src
+
+** deft
+查找 org roam.
+
+#+begin_src emacs-lisp
+  (use-package deft
+    :after org-roam
+    :commands (deft)
+    :bind
+    ("C-c o d" . deft)
+    :custom
+    (deft-recursive t)
+    (deft-use-filter-string-for-filename t)
+    (deft-extensions '("md" "org"))
+    (deft-directory org-roam-directory))
+#+end_src
+
+** org-roam-timestamps
+自动创建笔记的创建时间和修改时间。
+
+#+begin_src emacs-lisp
+(use-package org-roam-timestamps
+  :straight (:type git :host github :repo "ThomasFKJorna/org-roam-timestamps")
+  :after org-roam
+  :config
+  (org-roam-timestamps-mode))
+#+end_src
+
+* markdown
+** markdown
+
+#+begin_src emacs-lisp
+  (use-package markdown-mode
+    :defer 5
+    :init
+    (setq markdown-command "multimarkdown")
+    :hook
+    (markdown-mode . (lambda ()
+                             (dolist (face '((markdown-header-face-1 . 1.2)
+                                             (markdown-header-face-2 . 1.1)
+                                             (markdown-header-face-3 . 1.0)
+                                             (markdown-header-face-4 . 1.0)))
+                               (set-face-attribute (car face) nil :weight 'normal :height (cdr face))))))
+#+end_src
+
+** pangu-spacing
+自动规范化 markdown 格式，自动在中英文之间插入空格。
+
+#+begin_src emacs-lisp
+  (use-package pangu-spacing
+    :hook (markdown-mode . global-pangu-spacing-mode)
+    :config
+    (setq pangu-spacing-real-insert-separtor t))
+#+end_src
+
+* evil
+** evil
+C-z 在 emacs 和 vim 模式切换。
+
+#+begin_src emacs-lisp
+  (use-package evil
+    :hook (after-init . evil-mode)
+    :init
+    (setq evil-want-integration t
+          evil-want-keybinding nil)
+    :config
+    (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
+
+    ;; eaf
+    (evil-set-initial-state 'eaf-mode 'emacs)
+    (setq evil-buffer-regexps '(("^\\*Outline:.*" . 'emacs))))
+#+end_src
+
+** evil-collection
+这个插件集成了很多 package 的 evil 模式。
+
+#+begin_src emacs-lisp
+  (use-package evil-collection
+    :after evil
+    :config
+    (evil-collection-init))
+#+end_src
+
+** evil-surround
+
+#+begin_src emacs-lisp
+  (use-package evil-surround
+    :hook (evil-mode . global-evil-surround-mode))
+#+end_src
+
+********** evil-lion
+
+```emacs-lisp
+;; http://github.com/edkolev/evil-lion
+;; 根据空格或其它符号进行对齐操作。左对齐: gl MOTION CHAR 右对齐: gL MOTION CHAR
+
+(use-package evil-lion
+  :ensure t
+  :config
+  (evil-lion-mode))
+```
+
+** evil-nerd-commenter
+evil 注释。
+
+#+begin_src emacs-lisp
+  (use-package evil-nerd-commenter
+    :bind
+    ("M-/" . evilnc-comment-or-uncomment-lines))
+#+end_src
+
+** sis
+evil 不同模式中英文自动切换。
+
+#+begin_src emacs-lisp
+  (use-package sis
+    :after evil
+    :config
+    ;; 需要安装 im-select 工具，https://github.com/daipeihust/im-select
+    (sis-ism-lazyman-config "1033" "2052" 'im-select)
+
+    (sis-global-cursor-color-mode t)
+    (sis-global-respect-mode t)
+    (sis-global-context-mode t)
+    (sis-global-inline-mode t))
+#+end_src
+
+* TTS
+windows 需要安装 jampal，参考这里[fn:7]。
+
+#+begin_src emacs-lisp
+  (use-package read-aloud
+    :defer t
+    :config
+    (lax-plist-put read-aloud-engines "jampal"
+    '(cmd "cscript"
+      args ("d:/Jampal/ptts.vbs" "-r" "4")) )
+    (setq read-aloud-engine "jampal"))
+#+end_src
+
+* 翻译
+** fanyi
+
+#+begin_src emacs-lisp
+  (use-package fanyi
+    :defer t
+    :custom
+    (fanyi-sound-player-support-https t)
+    (fanyi-providers '(;; 海词
+                       fanyi-haici-provider
+                       ;; 有道同义词词典
+                       fanyi-youdao-thesaurus-provider
+                       ;; Etymonline
+                       fanyi-etymon-provider
+                       ;; Longman
+                       fanyi-longman-provider
+                       ;; LibreTranslate
+                       fanyi-libre-provider)))
+#+end_src
+
+* 媒体
+** emms
+
+#+begin_src emacs-lisp
+  (use-package emms
+    :defer t
+    :init
+    (setq default-process-coding-system '(utf-8-unix . chinese-gbk-dos))
+    :custom
+    ;; 音视频媒体库
+    (emms-source-file-default-directory "f:/多媒体")
+
+    ;; 播放列表
+    (emms-playlist-buffer-name "*播放列表*")
+
+    ;; 播放列表循环播放
+    (emms-repeat-playlist t)
+
+    ;; 交互式播放
+    (emms-playlist-default-major-mode 'emms-playlist-mode)
+
+    ;; 播放器列表
+    (emms-player-list '(emms-player-mpv
+                        emms-player-mplayer))
+
+    ;; Reading metadata, 可用 Tinytag 和 Exiftool。
+    ;; pip install tinytag
+    (emms-info-functions '(emms-info-tinytag))
+
+    ;; Load cover images，使用 ImageMagick
+    (emms-browser-covers 'emms-browser-cache-thumbnail-async)
+
+    (emms-browser-make-filter "all" 'ignore)
+
+    :config
+    (require 'emms-setup)
+    (emms-all)
+
+    (emms-lyrics 1)
+
+    (defvar emms-browser-info-title-format "%i%n")
+    (defvar emms-browser-playlist-info-title-format
+      emms-browser-info-title-format)
+
+    (define-emms-simple-player mpv '(file url)
+      (regexp-opt '(".ogg" ".mp3" ".wav" ".mpg" ".mpeg" ".wmv" ".wma"
+                    ".mov" ".avi" ".divx" ".ogm" ".asf" ".mkv" "http://" "mms://"
+                    ".rm" ".rmvb" ".mp4" ".flac" ".vob" ".m4a" ".flv" ".ogv" ".pls"))
+      "mpv" "--no-terminal" " --fullscreen" "--quiet" "--really-quiet")
+
+    (define-emms-simple-player mplayer '(file url)
+      (regexp-opt '(".ogg" ".mp3" ".wav" ".mpg" ".mpeg" ".wmv" ".wma"
+                    ".mov" ".avi" ".divx" ".ogm" ".asf" ".mkv" "http://" "mms://"
+                    ".rm" ".rmvb" ".mp4" ".flac" ".vob" ".m4a" ".flv" ".ogv" ".pls"))
+      "mplayer" "-slave" "-quiet" "-really-quiet" "-fullscreen"))
+#+end_src
+
+* 其它
+** no-littering
+保持 .emacs.d 清洁。
+
+#+begin_src emacs-lisp
+  (use-package no-littering
+    :config
+    (with-eval-after-load 'recentf)
+    (set 'recentf-exclude
+         '(no-littering-var-directory
+           no-littering-etc-directory
+           (expand-file-name "elpa" user-emacs-directory)))
+
+    (setq auto-save-file-name-transforms
+          `((".*" ,(no-littering-expand-var-file-name "auto-save/") t))))
+#+end_src
+
+** command-log-mode
+显示部分或所有 buffer 的事件或命令历史。
+
+- ~M-x command-log-mode~ 监听当前 buffer 命令并显示。
+- ~M-x global-command-log-mode~ 监听所有 buffer 命令并显示。
+- ~M-x clm/open-command-log-buffer~ 打开显示 buffer。
+
+#+begin_src emacs-lisp
+(use-package command-log-mode
+  :commands command-log-mode)
+#+end_src
+
+** helpful
+emacs 内置 help 的替代，能够显示更丰富的内容。
+
+#+begin_src emacs-lisp
+(use-package helpful
+  :bind
+  ([remap describe-function] . helpful-function)
+  ([remap describe-command] . helpful-command)
+  ([remap describe-variable] . helpful-variable)
+  ([remap describe-symbol] . helpful-symbol)
+  ([remap describe-key] . helpful-key))
+#+end_src
+
+** rainbow-delimiters
+用不同颜色标记多级括号。
+
+#+begin_src emacs-lisp
+(use-package rainbow-delimiters
+  :hook (prog-mode . rainbow-delimiters-mode))
+#+end_src
+
+** super-save
+自动保存。
+
+#+begin_src emacs-lisp
+(use-package super-save
+  :hook (after-init . super-save-mode)
+  :config
+  (setq super-save-auto-save-when-idle t))
+#+end_src
+
+** ws-butler
+自动消除尾部空白。
+
+#+begin_src emacs-lisp
+(use-package ws-butler
+  :hook ((text-mode
+          prog-mode) . ws-butler-mode))
+#+end_src
+
+** ace-window
+window 之间快速切换。
+
+#+begin_src emacs-lisp
+  (use-package ace-window
+    :bind
+    ("M-o" . ace-window)
+    :config
+    (setq aw-scope 'frame
+          aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)
+          aw-minibuffer-flag t)
+
+    (ace-window-display-mode 1))
+#+end_src
+
+** winner
+窗口布局 undo/redo，默认快捷键为 =C-c 方向键左/右= 。
+
+#+begin_src emacs-lisp
+  (use-package winner
+    :straight (:type built-in)
+    :hook (after-init . winner-mode))
+#+end_src
+
+** which-key
+显示当前键入未完成命令的所有补全命令列表。
+
+#+begin_src emacs-lisp
+  (use-package which-key
+    :hook (after-init . which-key-mode)
+    :custom
+    (which-key-idle-delay 0.4))
+#+end_src
+
+** undo-tree
+~C-x u~ 查看 undo tree， ~q~ 退出。
+
+#+begin_src emacs-lisp
+(use-package undo-tree
+  :hook (after-init . global-undo-tree-mode))
+#+end_src
+
+** valign
+表格对齐。
+
+#+begin_src emacs-lisp
+(use-package valign
+  :hook ((org-mode
+         markdown-mode) . valign-mode))
+#+end_src
+
+* EAF
+
+#+begin_src emacs-lisp
+  (use-package eaf
+    :straight nil
+    :load-path "site-lisp/eaf"
+    :defer 2
+    :init
+    (setq eaf-enable-debug t
+          ;;eaf-proxy-type "socks5"
+          ;;eaf-proxy-host "127.0.0.1"
+          ;;eaf-proxy-port "10800"
+          )
+    :config
+    (require 'eaf-browser)
+
+    (require 'eaf-image-viewer)
+    (require 'eaf-music-player)
+    (require 'eaf-video-player)
+
+    (require 'eaf-file-manager)
+
+    (require 'eaf-mindmap)
+
+    (require 'eaf-netease-cloud-music)
+
+    (require 'eaf-pdf-viewer)
+    (setq eaf-pdf-dark-mode t)
+
+    (require 'eaf-org-previewer)
+    (require 'eaf-markdown-previewer))
+#+end_src
+
+* ERC
+
+#+begin_src emacs-lisp
+  (use-package erc
+    :defer t
+    :straight (:type built-in)
+    :defines erc-autojoin-channels-alist
+    :config
+    (setq erc-rename-buffers t
+          erc-interpret-mirc-color t
+          erc-lurker-hide-list '("JOIN" "PART" "QUIT")
+          erc-autojoin-channels-alist '(("freenode.net" "#emacs"))))
+#+end_src
+
+1. 登陆 emacs ERC
+
+启动指令 ~M-x erc~ 。
+
+#+begin_example
+IRC server : irc.freenode.net
+IRC port   : 6667
+Nickname   : "your name"
+Password   : "your passwd"
+#+end_example
+
+2. 注册账号
+
+#+begin_example
+/msg NickServ REGISTER password youremail@example.com
+#+end_example
+
+可使用指令 ~/nick~ 修改 Nickname 至满意为止，尽量避免使用社区、商标名。
+
+3. 登陆账号
+
+账号
+#+begin_example
+/nick "your name"
+#+end_example
+
+密码
+#+begin_example
+/msg NickServ identify "your passwd"
+#+end_example
+
+* Footnotes
+
+[fn:7] https://github.com/gromnitsky/read-aloud.el
+[fn:6] https://github.com/abo-abo/hydra
+[fn:5] https://github.com/seagle0128/doom-modeline
+[fn:4] https://github.com/emacs-dashboard/emacs-dashboard
+[fn:3] https://github.com/ema2159/centaur-tabs
+[fn:2] https://github.com/domtronn/all-the-icons.el
+[fn:1] https://jwiegley.github.io/use-package/keywords/#bind-keymap-bind-keymap

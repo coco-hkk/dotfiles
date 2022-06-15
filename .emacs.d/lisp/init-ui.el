@@ -96,26 +96,5 @@
                           (registers . 5)
                           (agenda    . 5))))
 
-(defhydra hydra-ui (:color pink
-                           :exit t
-                           :hint nil)
-  "
-  ^Centaur^
------------------------------------------------------------------
-_cs_: switch group
-_cp_: group by project
-_cg_: group by buffer
-
-"
-  ("cs" centaur-tabs-counsel-switch-group)
-  ("cp" centaur-tabs-group-by-projectile-project)
-  ("cg" centaur-tabs-group-buffer-groups)
-
-  ("q" nil "quit" :color pink))
-
-(hkk/leader-key
-  ;; hydra keybindings
-  "u" '(hydra-ui/body :which-key "UI"))
-
 (provide 'init-ui)
 ;;; init-ui.el ends here

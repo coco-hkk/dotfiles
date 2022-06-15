@@ -3,7 +3,7 @@
 ;;; Code:
 
 (use-package markdown-mode
-  :defer t
+  :defer 5
   :init
   (setq markdown-command "multimarkdown")
   :hook
