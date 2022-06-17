@@ -1338,34 +1338,77 @@ window 之间快速切换。
 * EAF
 
 #+begin_src emacs-lisp
+  (defconst IS-WINDOWS (or (eq system-type 'ms-dos)
+                           (eq system-type 'windows-nt)))
+
+  (defun my-eaf-install-deps (app-dir)
+    "From APP-DIR install deps from dependencies.json."
+    (let* ((deps-dict (with-temp-buffer
+                        (insert-file-contents (expand-file-name "dependencies.json" app-dir))
+                        (json-parse-string (buffer-string))))
+           (pip-deps (gethash "win32" (or (gethash "pip" deps-dict) (make-hash-table))))
+           (vue-install (gethash "vue_install" deps-dict))
+           (npm-install (gethash "npm_install" deps-dict))
+           (npm-rebuild (gethash "npm_rebuild" deps-dict))
+           (npm-cmd (if (memq system-type '(cygwin windows-nt ms-dos)) "npm.cmd" "npm")))
+      (when pip-deps
+        (dolist (pkg (append pip-deps nil))
+          (message "%s" (shell-command-to-string (format "pip install %s" pkg)))))
+      (when vue-install
+        (let ((default-directory app-dir))
+          (message "%s" (shell-command-to-string (format "%s install" npm-cmd)))
+          (message "%s" (shell-command-to-string (format "%s run build" npm-cmd)))))
+      (when npm-install
+        (let ((default-directory app-dir))
+          (message "%s" (shell-command-to-string (format "%s install" npm-cmd)))))
+      (when npm-rebuild
+        (let ((default-directory app-dir))
+          (message "%s" (shell-command-to-string (format "%s rebuild" npm-cmd)))))))
+
   (use-package eaf
-    :straight nil
-    :load-path "site-lisp/eaf"
-    :defer 2
+    :straight (eaf :type git
+                   :host github
+                   :repo "emacs-eaf/emacs-application-framework"
+                   :files ("*")
+                   :post-build ("python" "install-eaf.py" "--install-core-deps"))
     :init
-    (setq eaf-enable-debug t
-          ;;eaf-proxy-type "socks5"
-          ;;eaf-proxy-host "127.0.0.1"
-          ;;eaf-proxy-port "10800"
-          )
+    (setq eaf-config-location "d:/emacs/.emacs.d/var/eaf/"
+          eaf-browser-default-search-engine "bing"
+          eaf-enable-debug t)
     :config
-    (require 'eaf-browser)
+    (when IS-WINDOWS
+      (setq eaf-python-command "d:/Python310/python.exe")
+      (setq eaf-wm-name "windows")))
 
-    (require 'eaf-image-viewer)
-    (require 'eaf-music-player)
-    (require 'eaf-video-player)
+  (use-package eaf-demo
+    :after (eaf)
+    :straight (eaf-demo :type git
+                        :host github
+                        :repo "emacs-eaf/eaf-demo"
+                        :files ("*")))
 
-    (require 'eaf-file-manager)
+  (use-package eaf-browser
+    :after (eaf)
+    :straight (eaf-browser :type git
+                           :host github
+                           :repo "emacs-eaf/eaf-browser"
+                           :files ("*")
+                           :post-build (my-eaf-install-deps (straight--build-dir "eaf-browser"))))
 
-    (require 'eaf-mindmap)
+  (use-package eaf-video-player
+    :after (eaf)
+    :straight (eaf-video-player :type git
+                                :host github
+                                :repo "emacs-eaf/eaf-video-player"
+                                :files ("*")))
 
-    (require 'eaf-netease-cloud-music)
-
-    (require 'eaf-pdf-viewer)
-    (setq eaf-pdf-dark-mode t)
-
-    (require 'eaf-org-previewer)
-    (require 'eaf-markdown-previewer))
+  (use-package eaf-pdf-viewer
+    :after (eaf)
+    :straight (eaf-pdf-viewer :type git
+                              :host github
+                              :repo "emacs-eaf/eaf-pdf-viewer"
+                              :files ("*")
+                              :post-build (my-eaf-install-deps (straight--build-dir "eaf-pdf-viewer"))))
 #+end_src
 
 * ERC
@@ -1416,9 +1459,15 @@ Password   : "your passwd"
 * Footnotes
 
 [fn:7] https://github.com/gromnitsky/read-aloud.el
+
 [fn:6] https://github.com/abo-abo/hydra
+
 [fn:5] https://github.com/seagle0128/doom-modeline
+
 [fn:4] https://github.com/emacs-dashboard/emacs-dashboard
+
 [fn:3] https://github.com/ema2159/centaur-tabs
+
 [fn:2] https://github.com/domtronn/all-the-icons.el
+
 [fn:1] https://jwiegley.github.io/use-package/keywords/#bind-keymap-bind-keymap
