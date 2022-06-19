@@ -68,54 +68,5 @@
   :hook
   (prog-mode . format-all-mode))
 
-(defhydra hydra-lsp-bridge (:color pink
-                                   :exit t
-                                   :hint nil)
-  "
-                           ^lsp bridge^
----------------------------------------------------------------------------
-_fd_: definition        _dd_: lookup doc      _jn_: diagnostic next
-_fi_: implementation    _dn_: pop doc down    _jp_: diagnostic pre
-_fr_: reference         _dp_: pop doc up      _rn_: rename symbol
-_fb_: back calling         ^ ^                _ip_: insert prefix candiates
-_fo_: fd other win
-_fw_: fi other win
-
-                               ^acm^
----------------------------------------------------------------------------
-_e_: english helper
-
-"
-  ("fd" lsp-bridge-find-def)
-  ("fo" lsp-bridge-find-def-other-window)
-  ("fi" lsp-bridge-find-impl)
-  ("fw" lsp-bridge-find-impl-other-window)
-  ("fr" lsp-bridge-find-references)
-  ("fb" lsp-bridge-return-from-def)
-
-  ("dd" lsp-bridge-lookup-documentation)
-  ("dn" lsp-bridge-popup-documentation-scroll-down)
-  ("dp" lsp-bridge-popup-documentation-scroll-up)
-
-  ("rn" lsp-bridge-rename)
-
-  ("jn" lsp-bridge-jump-to-next-diagnostic)
-  ("jp" lsp-bridge-jump-to-prev-diagnostic)
-
-  ("ip" lsp-bridge-insert-common-prefix)
-
-  ("e" acm-toggle-english-helper)
-
-  ("q" nil "quit" :color pink))
-
-(hkk/leader-key
-  ;; hydra keybindings
-  "l" '(hydra-lsp-bridge/body :which-key "lsp bridge")
-  "d" '(dap-hydra/body :which-key "dap"))
-
-(hkk/ctrl-c
-  ;; flycheck
-  "!"  '(:ignore t :which-key "flycheck"))
-
 (provide 'init-program)
 ;;; init-program.el ends here

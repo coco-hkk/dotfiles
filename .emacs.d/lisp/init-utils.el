@@ -27,6 +27,9 @@
           prog-mode) . ws-butler-mode))
 
 ;; 用不同颜色标记多级括号
+(use-package rainbow-mode
+  :hook (emacs-lisp-mode-hook . rainbow-mode))
+
 (use-package rainbow-delimiters
   :hook (prog-mode . rainbow-delimiters-mode))
 

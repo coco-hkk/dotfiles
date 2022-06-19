@@ -94,30 +94,5 @@
 (use-package treemacs-icons-dired
   :hook (dired-mode . treemacs-icons-dired-mode))
 
-(defhydra hydra-treemacs (
-                          :color pink
-                          :exit t
-                          :hint nil)
-  "
-             ^treemacs^
---------------------------------------------
-_t_: treemacs          _s_: select directory
-_n_: next workspace    _S_: switch workspace
-_e_: edit workspace
-
-"
-
-  ("t" treemacs)
-  ("s" treemacs-select-directory)
-  ("n" treemacs-next-workspace)
-  ("S" treemacs-switch-workspace)
-  ("e" treemacs-edit-workspace)
-
-  ("q" nil "quit" :color red))
-
-(hkk/leader-key
-  ;; hydra keybindings
-  "t" '(hydra-treemacs/body :which-key "treemacs"))
-
 (provide 'init-treemacs)
 ;;; init-treemacs.el ends here

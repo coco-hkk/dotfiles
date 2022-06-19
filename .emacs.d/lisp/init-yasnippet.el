@@ -14,9 +14,5 @@
 ;;(use-package yasnippet-snippets
 ;;  :after yasnippet)
 
-(hkk/ctrl-c
-  ;; yasnippet
-  "&"  '(:ignore t :which-key "yasnippet"))
-
 (provide 'init-yasnippet)
 ;;; init-yasnippet.el ends here

@@ -53,7 +53,11 @@
 ;;; parenthesis 高亮显示配对的( ) [ ] { } 括号
 (use-package paren
   :straight (:type built-in)
-  :hook (after-init . show-paren-mode))
+  :hook (after-init . show-paren-mode)
+  :custom
+  (show-paren-style 'mixed)
+  (show-paren-when-point-inside-paren t)
+  (show-paren-when-point-in-periphery t))
 
 ;;; ERC
 (use-package erc

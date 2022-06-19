@@ -11,6 +11,8 @@
 (menu-bar-mode -1)                                  ; 禁掉菜单栏
 (set-fringe-mode 5)                                 ; 设置侧边空白大小
 
+(setq use-dialog-box nil)                           ; Don't pop up UI dialogs when prompting
+
 (blink-cursor-mode -1)                              ; 禁止光标闪烁
 (setq visible-bell t)                               ; 禁掉蜂鸣
 (setq make-backup-files nil)                        ; 禁止备份文件
@@ -22,6 +24,7 @@
 (setq-default tab-width 2)                          ; 设置 tab 宽度
 (setq-default evil-shift-width tab-width)           ; 保持 shift 和 tab 宽度一致
 (setq-default indent-tabs-mode nil)                 ; 设置空格替代 tab
+(setq require-final-newline t)                      ; 在文件末尾添加新行
 
 (fset 'yes-or-no-p 'y-or-n-p)                       ; 使用 'y/n' 代替 'yes/no'
 

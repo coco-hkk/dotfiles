@@ -18,9 +18,5 @@
   :after projectile
   :config (counsel-projectile-mode))
 
-(hkk/ctrl-c
-  ;; projectile
-  "p"   '(:ignore t :which-key "projectile"))
-
 (provide 'init-projectile)
 ;;; init-projectile.el ends here

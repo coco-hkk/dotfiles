@@ -4,8 +4,6 @@
 
 ;;; Code:
 
-;;(add-to-list 'load-path "~/.emacs.d/site-lisp/eaf")
-
 (use-package netease-cloud-music
   :defer 2
   :config
@@ -45,7 +43,7 @@
                  :files ("*")
                  :post-build ("python" "install-eaf.py" "--install-core-deps"))
   :init
-  (setq eaf-config-location "d:/emacs/.emacs.d/var/eaf"
+  (setq eaf-config-location "d:/emacs/.emacs.d/var/eaf/"
         eaf-browser-default-search-engine "bing"
         eaf-enable-debug t)
   :config
@@ -83,32 +81,32 @@
                             :files ("*")
                             :post-build (my-eaf-install-deps (straight--build-dir "eaf-pdf-viewer"))))
 
-(defhydra hydra-eaf (:color pink
-                            :exit t
-                            :hint nil)
-  "
-^browse^        ^mindmap^       ^File Manager^      ^open^
-^^^^^^^^-------------------------------------------------------
-_b_: browse     _m_: create     _f_: manager      _o_: open
-_s_: search     _M_: open
-  ^ ^             ^ ^
-  ^ ^             ^ ^              ^ ^
-"
-  ("b" eaf-open-browser)
-  ("s" eaf-open-browser-with-history)
-
-  ("m" eaf-create-mindmap)
-  ("M" eaf-open-mindmap)
-
-  ("f" eaf-open-file-manager)
-
-  ("o" eaf-open)
-
-  ("q" nil "quit" :color red))
-
-(hkk/leader-key
-  ;; org roam
-  "e" '(hydra-eaf/body :which-key "eaf"))
+;;(use-package eaf
+;;  :straight nil
+;;  :load-path "site-lisp/eaf"
+;;  :init
+;;  (setq eaf-python-command "d:/Python310/python.exe"
+;;        eaf-enable-debug t
+;;        eaf-pdf-dark-mode t
+;;        eaf-browser-default-search-engine "bing"
+;;        eaf-browser-blank-page-url "https://www.baidu.com"
+;;        eaf-config-location "d:/emacs/.emacs.d/etc/eaf/"
+;;
+;;        ;;eaf-proxy-type "socks5"
+;;        ;;eaf-proxy-host "127.0.0.1"
+;;        ;;eaf-proxy-port "10800"
+;;        )
+;;  :config
+;;  ;;(require 'eaf-browser)
+;;  ;;(require 'eaf-image-viewer)
+;;  (require 'eaf-video-player)
+;;  ;;(require 'eaf-music-player)
+;;  ;;(require 'eaf-pdf-viewer)
+;;  ;;(require 'eaf-mindmap)
+;;  ;;(require 'eaf-netease-cloud-music)
+;;  ;;(require 'eaf-org-previewer)
+;;  ;;(require 'eaf-markdown-previewer)
+;;  )
 
 (provide 'init-eaf)
 ;;; init-eaf.el ends here
