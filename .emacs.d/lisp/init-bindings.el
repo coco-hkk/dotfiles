@@ -22,7 +22,7 @@
 
 ;;; misc
 (pretty-hydra-define misc-hydra
-  (:title misc--title)
+  (:title misc--title :quit-key "q")
   ("Jampal"
    (("je" read-aloud-change-engine "Change Engines")
     ("jr" read-aloud-buf "Read Buffer")
@@ -43,6 +43,7 @@
    (("ff" (lambda () (interactive) (find-file (expand-file-name "~/.emacs.d/init.el"))) "init.el")
     ("fl" (lambda () (interactive) (dired (expand-file-name "~/.emacs.d/lisp/"))) "lisp")
     ("s" eshell-toggle "Toggle Eshell")
+    ("i" eshell-command-insert "Eshell result")
     ("p" proced "Proced"))
 
    "Emms"
@@ -56,7 +57,7 @@
 
 ;;; toggle
 (pretty-hydra-define toggles-hydra
-  (:title toggles--title)
+  (:title toggles--title :quit-key "q")
   ("Basic"
    (("v" view-mode "view number" :toggle t)
     ("n" linum-mode "line number" :toggle t)
@@ -82,7 +83,7 @@
 
 ;;; window
 (pretty-hydra-define window-hydra
-  (:title window--title)
+  (:title window--title :quit-key "q")
   ("Actions"
    (("TAB" other-window "switch")
     ("x" ace-delete-window "delete")
@@ -104,7 +105,7 @@
 
 ;;; completion
 (pretty-hydra-define completion-hydra
-  (:title completion--title)
+  (:title completion--title :quit-key "q")
   ("Consult"
    (("cp" consult-grep "grep")
     ("cG" consult-git-grep "git grep")
@@ -125,7 +126,7 @@
 
 ;;; eaf
 (pretty-hydra-define eaf-hydra
-  (:title eaf--title)
+  (:title eaf--title :quit-key "q")
   ("Browser"
    (("S" eaf-open-browser "browser")
     ("s" eaf-open-browser-with-history "search"))
@@ -143,7 +144,7 @@
 
 ;;; lsp
 (pretty-hydra-define lsp-hydra
-  (:title lsp--title)
+  (:title lsp--title :quit-key "q")
   ("Lsp Bridge"
    (("d" lsp-bridge-find-def-other-window "defintion other window")
     ("i" lsp-bridge-find-impl-other-window "implementation other window")
@@ -158,7 +159,7 @@
 
 ;;; treemacs
 (pretty-hydra-define treemacs-hydra
-  (:title treemacs--title)
+  (:title treemacs--title :quit-key "q")
   ("Treemacs"
    (("t" treemacs "treemacs")
     ("s" treemacs-select-directory "select directory")
@@ -169,7 +170,7 @@
 
 ;;; org
 (pretty-hydra-define org-hydra
-  (:title org--title)
+  (:title org--title :quit-key "q")
   ("Org Mode"
    (("oa" org-agenda "agenda status")
     ("oc" org-capture "cpature")

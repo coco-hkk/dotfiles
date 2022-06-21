@@ -4,6 +4,9 @@
 #+DATE: <2022-06-14 周二>
 
 * 目录 :TOC:noexport:
+- [[#个人信息][个人信息]]
+- [[#emacs-初始化][Emacs 初始化]]
+  - [[#文件备份][文件备份]]
 - [[#package-管理][package 管理]]
   - [[#straightel-配置][straight.el 配置]]
   - [[#use-package-表达式][use-package 表达式]]
@@ -47,6 +50,7 @@
   - [[#flycheck][flycheck]]
   - [[#lsp-bridge][lsp-bridge]]
   - [[#dap-mode][dap-mode]]
+  - [[#eshell][eshell]]
 - [[#项目管理][项目管理]]
   - [[#projectile][projectile]]
   - [[#counsel-projectile][counsel-projectile]]
@@ -90,11 +94,29 @@
   - [[#ace-window][ace-window]]
   - [[#winner][winner]]
   - [[#which-key][which-key]]
+  - [[#which-key-posframe][which-key-posframe]]
   - [[#undo-tree][undo-tree]]
   - [[#valign][valign]]
 - [[#eaf][EAF]]
 - [[#erc][ERC]]
 - [[#footnotes][Footnotes]]
+
+* 个人信息
+
+#+begin_src emacs-lisp
+  (setq user-full-name "coco-hkk"
+        user-mail-address "hkkdlut@sina.cn")
+#+end_src
+
+* Emacs 初始化
+** 文件备份
+
+#+begin_src emacs-lisp
+  (setq make-backup-files t
+	delete-old-versions t
+	version-control t
+	vc-make-backup-files t)
+#+end_src
 
 * package 管理
 使用 *straight.el* 替代 emacs 自带 package.el 包管理工具，同时使用 *use-package* 配
@@ -421,7 +443,7 @@ general 用于批量绑定按键。相当于批量的 ~define-key~ 和 ~global-s
 
   ;;; misc
   (pretty-hydra-define misc-hydra
-    (:title misc--title)
+    (:title misc--title :quit-key "q")
     ("Jampal"
      (("je" read-aloud-change-engine "Change Engines")
       ("jr" read-aloud-buf "Read Buffer")
@@ -442,6 +464,7 @@ general 用于批量绑定按键。相当于批量的 ~define-key~ 和 ~global-s
      (("ff" (lambda () (interactive) (find-file (expand-file-name "~/.emacs.d/init.el"))) "init.el")
       ("fl" (lambda () (interactive) (dired (expand-file-name "~/.emacs.d/lisp/"))) "lisp")
       ("s" eshell-toggle "Toggle Eshell")
+      ("i" eshell-command-insert "Eshell result")
       ("p" proced "Proced"))
 
      "Emms"
@@ -455,7 +478,7 @@ general 用于批量绑定按键。相当于批量的 ~define-key~ 和 ~global-s
 
   ;;; toggle
   (pretty-hydra-define toggles-hydra
-    (:title toggles--title)
+    (:title toggles--title :quit-key "q")
     ("Basic"
      (("v" view-mode "view number" :toggle t)
       ("n" linum-mode "line number" :toggle t)
@@ -481,7 +504,7 @@ general 用于批量绑定按键。相当于批量的 ~define-key~ 和 ~global-s
 
   ;;; window
   (pretty-hydra-define window-hydra
-    (:title window--title)
+    (:title window--title :quit-key "q")
     ("Actions"
      (("TAB" other-window "switch")
       ("x" ace-delete-window "delete")
@@ -503,7 +526,7 @@ general 用于批量绑定按键。相当于批量的 ~define-key~ 和 ~global-s
 
   ;;; completion
   (pretty-hydra-define completion-hydra
-    (:title completion--title)
+    (:title completion--title :quit-key "q")
     ("Consult"
      (("cp" consult-grep "grep")
       ("cG" consult-git-grep "git grep")
@@ -524,7 +547,7 @@ general 用于批量绑定按键。相当于批量的 ~define-key~ 和 ~global-s
 
   ;;; eaf
   (pretty-hydra-define eaf-hydra
-    (:title eaf--title)
+    (:title eaf--title :quit-key "q")
     ("Browser"
      (("S" eaf-open-browser "browser")
       ("s" eaf-open-browser-with-history "search"))
@@ -542,7 +565,7 @@ general 用于批量绑定按键。相当于批量的 ~define-key~ 和 ~global-s
 
   ;;; lsp
   (pretty-hydra-define lsp-hydra
-    (:title lsp--title)
+    (:title lsp--title :quit-key "q")
     ("Lsp Bridge"
      (("d" lsp-bridge-find-def-other-window "defintion other window")
       ("i" lsp-bridge-find-impl-other-window "implementation other window")
@@ -557,7 +580,7 @@ general 用于批量绑定按键。相当于批量的 ~define-key~ 和 ~global-s
 
   ;;; treemacs
   (pretty-hydra-define treemacs-hydra
-    (:title treemacs--title)
+    (:title treemacs--title :quit-key "q")
     ("Treemacs"
      (("t" treemacs "treemacs")
       ("s" treemacs-select-directory "select directory")
@@ -568,7 +591,7 @@ general 用于批量绑定按键。相当于批量的 ~define-key~ 和 ~global-s
 
   ;;; org
   (pretty-hydra-define org-hydra
-    (:title org--title)
+    (:title org--title :quit-key "q")
     ("Org Mode"
      (("oa" org-agenda "agenda status")
       ("oc" org-capture "cpature")
@@ -917,6 +940,49 @@ minibuffer 上下文菜单和操作。
           dap-gdb-lldb-path-lldb '("d:/LLVM/bin/lldb-vscode.exe")
           )
     )
+#+end_src
+
+** eshell
+
+#+begin_src emacs-lisp
+  ;; 允许在光标所在位置插入eshell命令结果
+  (defun eshell-command-insert (command)
+    "Execute eshell COMMAND and insert output at point."
+    (interactive (list (read-shell-command "Eshell command: ")))
+    (insert (eshell-command-result command)))
+
+  (use-package eshell
+    :defer t
+    :hook (eshell-first-time-mode . (lambda ()
+                                      ;; Save command history when commands are entered
+                                      (add-hook 'eshell-pre-command-hook 'eshell-save-some-history)
+
+                                      ;; Truncate buffer for performance
+                                      (add-to-list 'eshell-output-filter-functions 'eshell-truncate-buffer)
+
+                                      ;; Bind some useful keys for evil-mode
+                                      (evil-define-key '(normal insert visual) eshell-mode-map (kbd "C-r") 'counsel-esh-history)
+
+                                      (evil-normalize-keymaps)
+                                      (setq eshell-scroll-to-bottom-on-input t)
+                                      (setq eshell-hist-ignoredups t))))
+
+  (use-package eshell-git-prompt
+    :after eshell
+    :config
+    (eshell-git-prompt-use-theme 'robbyrussell))
+
+  (use-package eshell-syntax-highlighting
+    :after eshell
+    :config
+    (eshell-syntax-highlighting-global-mode +1))
+
+  (use-package eshell-toggle
+    :after eshell
+    :config
+    (setq eshell-toggle-size-fraction 3
+          eshell-toggle-use-projectile-root t
+          eshell-toggle-run-command nil))
 #+end_src
 
 * 项目管理
@@ -1456,10 +1522,7 @@ windows 需要安装 jampal，参考这里[fn:7]。
     (set 'recentf-exclude
          '(no-littering-var-directory
            no-littering-etc-directory
-           (expand-file-name "elpa" user-emacs-directory)))
-
-    (setq auto-save-file-name-transforms
-          `((".*" ,(no-littering-expand-var-file-name "auto-save/") t))))
+           (expand-file-name "elpa" user-emacs-directory))))
 #+end_src
 
 ** command-log-mode
@@ -1545,7 +1608,17 @@ window 之间快速切换。
   (use-package which-key
     :hook (after-init . which-key-mode)
     :custom
-    (which-key-idle-delay 0.4))
+    (which-key-idle-delay 0.4)
+    (which-key-show-early-on-C-h t))
+#+end_src
+
+** which-key-posframe
+
+#+begin_src emacs-lisp
+  (use-package which-key-posframe
+    :after (which-key posframe)
+    :config
+    (which-key-posframe-mode))
 #+end_src
 
 ** undo-tree

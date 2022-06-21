@@ -14,10 +14,14 @@
 ;; 从子进程一次读取最大字节数，默认 4K 修改为 1M
 (setq read-process-output-max (* 1024 1024))
 
+(setq user-full-name "coco-hkk"
+      user-mail-address "hkkdlut@sina.cn")
+
 (push "~/.emacs.d/lisp" load-path)
 
-;; Variables configured via the interactive 'customize' interface
 (setq custom-file (locate-user-emacs-file "custom.el"))
+
+(setq load-prefer-newer t)
 
 (require 'init-package)
 (require 'init-base)

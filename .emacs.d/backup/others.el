@@ -11,3 +11,7 @@
          ("http" . "127.0.0.1:10800")
          ("https" . "127.0.0.1:10800")))
 
+;;(setq make-backup-files nil)                        ; 禁止备份文件
+(setq backup-directory-alist '(("." . (no-littering-expand-var-file-name "backup/")))
+      auto-save-file-name-transforms `((".*" ,(no-littering-expand-var-file-name "auto-save-list/") t)))
+

@@ -2,6 +2,11 @@
 ;;; Commentary:
 ;;; Code:
 
+(defun eshell-command-insert (command)
+  "Execute eshell COMMAND and insert output at point."
+  (interactive (list (read-shell-command "Eshell command: ")))
+  (insert (eshell-command-result command)))
+
 (use-package eshell
   :defer t
   :hook (eshell-first-time-mode . (lambda ()

@@ -40,10 +40,7 @@
   (set 'recentf-exclude
        '(no-littering-var-directory
          no-littering-etc-directory
-         (expand-file-name "elpa" user-emacs-directory)))
-
-  (setq auto-save-file-name-transforms
-        `((".*" ,(no-littering-expand-var-file-name "auto-save/") t))))
+         (expand-file-name "elpa" user-emacs-directory))))
 
 (provide 'init-package)
 ;;; init-package.el ends here

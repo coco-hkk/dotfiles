@@ -9,7 +9,13 @@
 (use-package which-key
   :hook (after-init . which-key-mode)
   :custom
-  (which-key-idle-delay 0.4))
+  (which-key-idle-delay 0.4)
+  (which-key-show-early-on-C-h t))
+
+(use-package which-key-posframe
+  :after (which-key posframe)
+  :config
+  (which-key-posframe-mode))
 
 (use-package general
   :config
