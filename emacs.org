@@ -4,20 +4,22 @@
 #+DATE: <2022-06-14 周二>
 
 * 目录 :TOC:noexport:
-- [[#个人信息][个人信息]]
 - [[#emacs-初始化][Emacs 初始化]]
+  - [[#个人信息][个人信息]]
+  - [[#基本配置][基本配置]]
+  - [[#行号配置][行号配置]]
+  - [[#编码配置][编码配置]]
+  - [[#窗体配置][窗体配置]]
+  - [[#状态栏配置][状态栏配置]]
+  - [[#字体配置][字体配置]]
   - [[#文件备份][文件备份]]
+  - [[#代理][代理]]
 - [[#package-管理][package 管理]]
   - [[#straightel-配置][straight.el 配置]]
   - [[#use-package-表达式][use-package 表达式]]
 - [[#性能分析][性能分析]]
   - [[#benchmark][benchmark]]
   - [[#垃圾回收][垃圾回收]]
-- [[#基础][基础]]
-  - [[#编码配置][编码配置]]
-  - [[#窗体配置][窗体配置]]
-  - [[#状态栏配置][状态栏配置]]
-  - [[#字体][字体]]
 - [[#主题][主题]]
   - [[#all-the-icons][all-the-icons]]
   - [[#doom-themes][doom-themes]]
@@ -26,6 +28,9 @@
 - [[#状态栏][状态栏]]
   - [[#doom-modeline][doom-modeline]]
   - [[#minions][minions]]
+- [[#which-key][which-key]]
+  - [[#which-key-1][which-key]]
+  - [[#which-key-posframe][which-key-posframe]]
 - [[#按键绑定][按键绑定]]
   - [[#general][general]]
   - [[#hydra][hydra]]
@@ -58,8 +63,8 @@
 - [[#内建插件][内建插件]]
   - [[#artist-mode][artist-mode]]
   - [[#proced][proced]]
-- [[#org][org]]
-  - [[#org-1][org]]
+- [[#org-mode][org mode]]
+  - [[#org][org]]
   - [[#toc-org][toc-org]]
   - [[#org-tempo][org-tempo]]
   - [[#org-superstar][org-superstar]]
@@ -93,29 +98,127 @@
   - [[#ws-butler][ws-butler]]
   - [[#ace-window][ace-window]]
   - [[#winner][winner]]
-  - [[#which-key][which-key]]
-  - [[#which-key-posframe][which-key-posframe]]
   - [[#undo-tree][undo-tree]]
   - [[#valign][valign]]
 - [[#eaf][EAF]]
 - [[#erc][ERC]]
 - [[#footnotes][Footnotes]]
 
-* 个人信息
+* Emacs 初始化
+** 个人信息
 
 #+begin_src emacs-lisp
-  (setq user-full-name "coco-hkk"
-        user-mail-address "hkkdlut@sina.cn")
+  (setq user-full-name       "coco-hkk"
+	user-real-login-name "coco-hkk"
+	user-login-name      "coco-hkk"
+	user-mail-address    "hkkdlut@sina.cn")
 #+end_src
 
-* Emacs 初始化
+** 基本配置
+
+#+begin_src emacs-lisp
+  (setq inhibit-startup-message t)                    ; 关闭启动页
+
+  ;; GUI Settings
+  (scroll-bar-mode -1)                                ; 禁掉滚动条
+  (tool-bar-mode -1)                                  ; 禁掉工具栏
+  (tooltip-mode -1)                                   ; 禁掉提示窗
+  (menu-bar-mode -1)                                  ; 禁掉菜单栏
+
+  (blink-cursor-mode -1)                              ; 禁止光标闪烁
+  (set-fringe-mode 5)                                 ; 设置侧边空白大小
+
+  (setq use-dialog-box nil)                           ; Don't pop up UI dialogs when prompting
+
+  (setq visible-bell t)                               ; 禁掉蜂鸣
+  (setq create-lockfiles nil)                         ; 禁止创建 lockfile
+#+end_src
+
+** 行号配置
+
+#+begin_src emacs-lisp
+  ;;; Line Number Settings
+  (column-number-mode)                                ; 在 Mode line 上显示列号
+  (global-display-line-numbers-mode t)                ; 显示行号
+
+  ;; 禁掉一些模式的行号
+  (dolist (mode '(text-mode-hook
+		  org-mode-hook
+		  shell-mode-hook
+		  helpful-mode-hook))
+    (add-hook mode (lambda () (display-line-numbers-mode 0))))
+#+end_src
+
+** 编码配置
+
+#+begin_src emacs-lisp
+  (set-language-environment 'utf-8)
+  (set-locale-environment "utf-8")
+  (set-default-coding-systems 'utf-8)
+#+end_src
+
+** 窗体配置
+设置窗体透明度，初始化全屏。
+
+#+begin_src emacs-lisp
+  (set-frame-parameter (selected-frame) 'alpha '(85 . 85))
+  (add-to-list 'default-frame-alist '(alpha . (85 . 85)))
+  (set-frame-parameter (selected-frame) 'fullscreen 'maximized)
+  (add-to-list 'default-frame-alist '(fullscreen . maximized))
+#+end_src
+
+** 状态栏配置
+
+#+begin_src emacs-lisp
+  ;; 显示文件大小
+  (size-indication-mode 1)
+  ;; 显示电池状态
+  (display-battery-mode 1)
+
+  ;; 显示时间和cpu负载状态
+  (setq display-time-format "%H:%M %a")
+  (display-time-mode 1)
+#+end_src
+
+** 字体配置
+中英文等宽字体，间距配置。
+
+#+begin_src emacs-lisp
+  ;; face sttribute
+  (set-face-attribute 'default        nil :font "ubuntu mono" :height 140)
+  (set-face-attribute 'fixed-pitch    nil :font "ubuntu mono" :height 1.0)
+  (set-face-attribute 'variable-pitch nil :font "ubuntu mono" :height 1.0 :weight 'regular)
+
+  ;; 中英文字体设置
+  (defun set-font (english chinese english-size chinese-size)
+    "Set CHINESE, ENGLISH font and size."
+    (set-face-attribute 'default nil :font
+                        (format "%s:pixelsize=%d"  english english-size))
+    (dolist (charset '(kana han symbol cjk-misc bopomofo))
+      (set-fontset-font (frame-parameter nil 'font) charset
+                        (font-spec :family chinese :size chinese-size))))
+
+  (set-font "ubuntu mono" "ubuntu mono" 24 24)
+#+end_src
+
 ** 文件备份
 
 #+begin_src emacs-lisp
-  (setq make-backup-files t
-	delete-old-versions t
-	version-control t
-	vc-make-backup-files t)
+  (setq-default make-backup-files t
+	        backup-by-copying t
+	        delete-old-versions t
+	        kept-new-versions 3
+	        kept-old-versions 1
+	        vc-make-backup-files t
+	        version-control t)
+#+end_src
+
+** 代理
+
+#+begin_src emacs-lisp
+  (setq url-proxy-services '(("no_proxy" . "^\\(192\\.168\\..*\\)")
+			     ("http" . "127.0.0.1:10800")
+			     ("https" . "127.0.0.1:10800")))
 #+end_src
 
 * package 管理
@@ -198,60 +301,6 @@ emacs 和 packages 启动时间统计。在 package 管理工具之后配置 ben
 #+begin_src emacs-lisp
   ;; Make gc pauses faster by decreasing the threshold.
   (setq gc-cons-threshold (* 2 1000 1000))
-#+end_src
-
-* 基础
-** 编码配置
-
-#+begin_src emacs-lisp
-(set-language-environment 'utf-8)
-(set-locale-environment "utf-8")
-(set-default-coding-systems 'utf-8)
-#+end_src
-
-** 窗体配置
-设置窗体透明度，初始化全屏。
-
-#+begin_src emacs-lisp
-(set-frame-parameter (selected-frame) 'alpha '(85 . 85))
-(add-to-list 'default-frame-alist '(alpha . (85 . 85)))
-(set-frame-parameter (selected-frame) 'fullscreen 'maximized)
-(add-to-list 'default-frame-alist '(fullscreen . maximized))
-#+end_src
-
-** 状态栏配置
-
-#+begin_src emacs-lisp
-  ;; 显示文件大小
-  (size-indication-mode 1)
-  ;; 显示电池状态
-  (display-battery-mode 1)
-
-  ;; 显示时间和cpu负载状态
-  (setq display-time-format "%H:%M %a"
-        display-time-default-load-average 2)
-  (display-time-mode 1)
-#+end_src
-
-** 字体
-中英文等宽字体，间距配置。
-
-#+begin_src emacs-lisp
-  ;; face sttribute
-  (set-face-attribute 'default        nil :font "ubuntu mono" :height 140)
-  (set-face-attribute 'fixed-pitch    nil :font "ubuntu mono" :height 1.0)
-  (set-face-attribute 'variable-pitch nil :font "ubuntu mono" :height 1.0 :weight 'regular)
-
-  ;; 中英文字体设置
-  (defun set-font (english chinese english-size chinese-size)
-    "Set CHINESE, ENGLISH font and size."
-    (set-face-attribute 'default nil :font
-                        (format "%s:pixelsize=%d"  english english-size))
-    (dolist (charset '(kana han symbol cjk-misc bopomofo))
-      (set-fontset-font (frame-parameter nil 'font) charset
-                        (font-spec :family chinese :size chinese-size))))
-
-  (set-font "ubuntu mono" "ubuntu mono" 24 24)
 #+end_src
 
 * 主题
@@ -373,6 +422,27 @@ tab 标签。参考这里[fn:3]。
     :hook (doom-modeline-mode . minions-mode))
 #+end_src
 
+* which-key
+** which-key
+显示当前键入未完成命令的所有补全命令列表。
+
+#+begin_src emacs-lisp
+  (use-package which-key
+    :hook (after-init . which-key-mode)
+    :custom
+    (which-key-idle-delay 0.4)
+    (which-key-show-early-on-C-h t))
+#+end_src
+
+** which-key-posframe
+
+#+begin_src emacs-lisp
+  (use-package which-key-posframe
+    :after (which-key posframe)
+    :config
+    (which-key-posframe-mode))
+#+end_src
+
 * 按键绑定
 ** general
 general 用于批量绑定按键。相当于批量的 ~define-key~ 和 ~global-set-key~ 。
@@ -472,6 +542,7 @@ general 用于批量绑定按键。相当于批量的 ~define-key~ 和 ~global-s
       ("ed" emms-add-directory-tree "媒体库")
       ("ej" emms-previous "上一首")
       ("ek" emms-next "下一首")
+      ("eR" emms-toggle-repeat-track "单曲循环")
       ("er" emms-toggle-repeat-playlist "列表重播")
       ("es" emms-toggle-random-playlist "列表随机"))
      ))
@@ -890,22 +961,23 @@ minibuffer 上下文菜单和操作。
     :hook (prog-mode . lsp-bridge-mode)
     :config
     (setq lsp-bridge-completion-candidates t
-          lsp-bridge-enable-signature-help t
-          lsp-bridge-enable-log t))
+	  lsp-bridge-enable-signature-help t
+	  lsp-bridge-enable-log t
+	  lsp-bridge-disable-backup nil))
 
   ;; 补全
   (use-package acm
     :straight nil
     :load-path "site-lisp/lsp-bridge/acm"
     :bind (:map acm-mode-map
-                ("C-j" . acm-select-next)
-                ("C-k" . acm-select-prev))
+	  ("C-j" . acm-select-next)
+	  ("C-k" . acm-select-prev))
     :config
     (acm-doc-show)
     (setq acm-mode t
-          acm-enable-dabbrev t
-          acm-backend-elisp-min-length 4
-          acm-backend-tempel-candidates-number 4))
+	  acm-enable-dabbrev t
+	  acm-backend-elisp-min-length 4
+	  acm-backend-tempel-candidates-number 4))
 #+end_src
 
 ** dap-mode
@@ -1056,7 +1128,7 @@ text 画图，通过鼠标左键或方向键画图（C-h m 查看帮助）。
           proced-auto-update-interval 3))
 #+end_src
 
-* org
+* org mode
 ** org
 
 #+begin_src emacs-lisp
@@ -1511,6 +1583,25 @@ windows 需要安装 jampal，参考这里[fn:7]。
       "mplayer" "-slave" "-quiet" "-really-quiet" "-fullscreen"))
 #+end_src
 
+Mplayer 快捷键（查看 Mplayer 安装目录 input.conf）：
+
+#+begin_example
+f       当播放视频时，在全屏和窗口模式之间切换。
+o       在播放视频时切换 OSD（OnScreen Display）模式。
+p,Space 暂停／继续播放。
+q,Esc   退出 MPlayer。在 GUI 模式时，Esc 不会退出，仅停止播放。
+9,0     减小或增大音量。
+m       静音切换。
+T       播放窗口置顶切换。
+b,j     在可用的字幕间循环。
+x,z     调整字幕的延迟时间。
+I       显示播放电影的文件名称。
+1,2     调整对比度。
+3,4     调整亮度。
+5,6     调整色度。
+7,8     调整饱和度。
+#+end_example
+
 * 其它
 ** no-littering
 保持 .emacs.d 清洁。
@@ -1522,7 +1613,7 @@ windows 需要安装 jampal，参考这里[fn:7]。
     (set 'recentf-exclude
          '(no-littering-var-directory
            no-littering-etc-directory
-           (expand-file-name "elpa" user-emacs-directory))))
+           )))
 #+end_src
 
 ** command-log-mode
@@ -1599,26 +1690,6 @@ window 之间快速切换。
   (use-package winner
     :straight (:type built-in)
     :hook (after-init . winner-mode))
-#+end_src
-
-** which-key
-显示当前键入未完成命令的所有补全命令列表。
-
-#+begin_src emacs-lisp
-  (use-package which-key
-    :hook (after-init . which-key-mode)
-    :custom
-    (which-key-idle-delay 0.4)
-    (which-key-show-early-on-C-h t))
-#+end_src
-
-** which-key-posframe
-
-#+begin_src emacs-lisp
-  (use-package which-key-posframe
-    :after (which-key posframe)
-    :config
-    (which-key-posframe-mode))
 #+end_src
 
 ** undo-tree

@@ -5,6 +5,8 @@
 ;; ESC Cancels All
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 
+(use-package posframe)
+
 ;; 快捷键提示包
 (use-package which-key
   :hook (after-init . which-key-mode)
@@ -40,7 +42,7 @@
   :straight (hydra-posframe :type git
                             :host github
                             :repo "Ladicle/hydra-posframe")
-  :after hydra
+  :after (hydra posframe)
   :init
   (setq hydra-posframe-border-width 3
         hydra-posframe-parameters '((left-fringe . 8)

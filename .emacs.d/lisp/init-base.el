@@ -5,70 +5,68 @@
 ;;; User Interface configurations
 (setq inhibit-startup-message t)                    ; 关闭启动页
 
+;; GUI Settings
 (scroll-bar-mode -1)                                ; 禁掉滚动条
 (tool-bar-mode -1)                                  ; 禁掉工具栏
 (tooltip-mode -1)                                   ; 禁掉提示窗
 (menu-bar-mode -1)                                  ; 禁掉菜单栏
-
-(blink-cursor-mode -1)                              ; 禁止光标闪烁
-(set-fringe-mode 5)                                 ; 设置侧边空白大小
-
 (setq use-dialog-box nil)                           ; Don't pop up UI dialogs when prompting
 
+(blink-cursor-mode -1)                              ; 禁止光标闪烁
 (setq visible-bell t)                               ; 禁掉蜂鸣
+
+(set-fringe-mode 5)                                 ; 设置侧边空白大小
+
 (setq create-lockfiles nil)                         ; 禁止创建 lockfile
 
-;; 文件备份
-(setq make-backup-files t
-      ;;backup-directory-alist '(("." . (no-littering-expand-var-file-name "backup/")))
-      ;;auto-save-file-name-transforms `((".*" ,(no-littering-expand-var-file-name "auto-save-list/") t))
-      delete-old-versions t
-      version-control t
-      vc-make-backup-files t)
+;; backup files
+(setq-default make-backup-files t
+              vc-make-backup-files t                ; 在版本控制的仓库中也备份
+              backup-by-copying t
+              delete-old-versions t
+              kept-new-versions 3
+              kept-old-versions 1
+              version-control t)
 
 (setq-default fill-column 80)                       ; 设置填充列
 (global-display-fill-column-indicator-mode)         ; 设置 80 列显示
 
-(setq tab-width 4                                   ; 设置 tab 宽度
-      evil-shift-width tab-width                    ; 保持 shift 和 tab 宽度一致
-      indent-tabs-mode nil)                         ; 设置空格替代 tab
+(setq-default tab-width 4                           ; 设置 tab 宽度
+              evil-shift-width tab-width            ; 保持 shift 和 tab 宽度一致
+              indent-tabs-mode nil)                 ; 设置空格替代 tab
 
-(setq require-final-newline t)                      ; 在文件末尾添加新行
+(setq-default require-final-newline t)              ; 在文件末尾添加新行
+(setq-default word-wrap-by-category t)              ; CJK wrap
 
-(fset 'yes-or-no-p 'y-or-n-p)                       ; 使用 'y/n' 代替 'yes/no'
-
-(setq word-wrap-by-category t)                      ; CJK wrap
+(defalias 'yes-or-no-p 'y-or-n-p)                   ; 使用 'y/n' 代替 'yes/no'
 
 (electric-pair-mode t)                              ; 自动补全括号
 
+;;; Line Number Settings
 (column-number-mode)                                ; 在 Mode line 上显示列号
-(setq display-line-numbers-type 'relative)          ; （可选）显示相对行号
-
-;; 启用一些模式的行号
-(dolist (mode '(prog-mode-hook
-                conf-mode-hook))
-  (add-hook mode (lambda () (display-line-numbers-mode 1))))
+(global-display-line-numbers-mode t)                ; 显示行号
 
 ;; 禁掉一些模式的行号
 (dolist (mode '(text-mode-hook
-                org-mode-hook))
+                org-mode-hook
+                shell-mode-hook
+                helpful-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
-(setq large-file-warning-threshold nil)             ; 不对大文件发出警告（如启动视频时）
-(setq vc-follow-symlinks t)                         ; 不对符号链接发出警告
-(setq ad-redefinition-action 'accept)               ; 为函数添加建议时不发出警告
+(setq-default large-file-warning-threshold nil      ; 不对大文件发出警告（如启动视频时）
+              vc-follow-symlinks t                  ; 不对符号链接发出警告
+              ad-redefinition-action 'accept)       ; 为函数添加建议时不发出警告
 
 ;;; 编码设置
 (set-language-environment 'utf-8)
 (set-locale-environment "utf-8")
 (set-default-coding-systems 'utf-8)
 
-;; 状态栏显示
+;; modeline status
 (size-indication-mode 1)                            ; 显示文件大小
 (display-battery-mode 1)                            ; 显示电池状态
 
-(setq display-time-format "%H:%M %a"
-      display-time-default-load-average 2)
+(setq-default display-time-format "%H:%M %a")
 (display-time-mode 1)                               ; 显示时间
 
 ;; 设置窗体透明度，初始化全屏

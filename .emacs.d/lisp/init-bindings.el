@@ -51,6 +51,7 @@
     ("ed" emms-add-directory-tree "媒体库")
     ("ej" emms-previous "上一首")
     ("ek" emms-next "下一首")
+    ("eR" emms-toggle-repeat-track "单曲循环")
     ("er" emms-toggle-repeat-playlist "列表重播")
     ("es" emms-toggle-random-playlist "列表随机"))
    ))

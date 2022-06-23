@@ -39,8 +39,7 @@
   (with-eval-after-load 'recentf)
   (set 'recentf-exclude
        '(no-littering-var-directory
-         no-littering-etc-directory
-         (expand-file-name "elpa" user-emacs-directory))))
+         no-littering-etc-directory)))
 
 (provide 'init-package)
 ;;; init-package.el ends here

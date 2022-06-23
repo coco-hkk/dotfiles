@@ -2,8 +2,6 @@
 ;;; Commentary:
 ;;; Code:
 
-(use-package posframe)
-
 (use-package lsp-bridge
   :straight nil
   :load-path "site-lisp/lsp-bridge"
@@ -11,7 +9,8 @@
   :config
   (setq lsp-bridge-completion-candidates t
         lsp-bridge-enable-signature-help t
-        lsp-bridge-enable-log t))
+        lsp-bridge-enable-log t
+	lsp-bridge-disable-backup nil))
 
 (use-package acm
   :straight nil

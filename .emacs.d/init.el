@@ -14,8 +14,10 @@
 ;; 从子进程一次读取最大字节数，默认 4K 修改为 1M
 (setq read-process-output-max (* 1024 1024))
 
-(setq user-full-name "coco-hkk"
-      user-mail-address "hkkdlut@sina.cn")
+(setq user-full-name       "coco-hkk"
+      user-real-login-name "coco-hkk"
+      user-login-name      "coco-hkk"
+      user-mail-address    "hkkdlut@sina.cn")
 
 (push "~/.emacs.d/lisp" load-path)
 
