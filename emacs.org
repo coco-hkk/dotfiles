@@ -435,6 +435,7 @@ tab 标签。参考这里[fn:3]。
 #+end_src
 
 ** which-key-posframe
+Win10 有卡顿，注释掉。
 
 #+begin_src emacs-lisp
   (use-package which-key-posframe
@@ -791,8 +792,8 @@ regexp, initialism, flex, multiple word prefixes。候补项以任何顺序匹�
   :defer 5
   :bind (:map corfu-map
               ("SPC" . corfu-insert-separator)
-              ("C-j" . corfu-next)
-              ("C-k" . corfu-previous)
+              ;("C-j" . corfu-next)
+              ;("C-k" . corfu-previous)
               ("TAB" . corfu-insert))
   :config
   ;; 自动补全
@@ -845,20 +846,21 @@ minibuffer 显示图标。
 minibuffer 补全。
 
 #+begin_src emacs-lisp
-  (use-package vertico
-    :straight (vertico :files (:defaults "extensions/*"))
-    :hook (after-init . vertico-mode)
-    :custom-face
-    (vertico-current ((t (:background "#3a3f5a"))))
-    :config
-    (vertico-mode)
-    (vertico-multiform-mode)
-    (vertico-indexed-mode)
-    (setq vertico-count 10)
+    (use-package vertico
+      :straight (vertico :files (:defaults "extensions/*"))
+      :hook (after-init . vertico-mode)
+      :custom-face
+      (vertico-current ((t (:background "#3a3f5a"))))
+      :config
+      (vertico-mode)
+      (vertico-multiform-mode)
+      (vertico-indexed-mode)
+      (setq vertico-count 10)
 
-    (bind-keys :map vertico-map
-               ("C-j" . vertico-next)
-               ("C-k" . vertico-previous)))
+      ;(bind-keys :map vertico-map
+      ;           ("C-j" . vertico-next)
+      ;           ("C-k" . vertico-previous))
+      )
 #+end_src
 
 ** vertico-posframe

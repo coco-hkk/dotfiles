@@ -25,8 +25,6 @@
   :defer 5
   :bind (:map corfu-map
               ("SPC" . corfu-insert-separator)
-              ("C-j" . corfu-next)
-              ("C-k" . corfu-previous)
               ("TAB" . corfu-insert))
   :config
   ;; 自动补全
@@ -101,10 +99,7 @@
   (vertico-multiform-mode)
   (vertico-indexed-mode)
   (setq vertico-count 10)
-
-  (bind-keys :map vertico-map
-             ("C-j" . vertico-next)
-             ("C-k" . vertico-previous)))
+  )
 
 (use-package vertico-posframe
   :after vertico

@@ -73,6 +73,13 @@
                               :repo "emacs-eaf/eaf-video-player"
                               :files ("*")))
 
+(use-package eaf-music-player
+  :after (eaf)
+  :straight (eaf-music-player :type git
+                              :host github
+                              :repo "emacs-eaf/eaf-music-player"
+                              :files ("*")))
+
 (use-package eaf-pdf-viewer
   :after (eaf)
   :straight (eaf-pdf-viewer :type git
